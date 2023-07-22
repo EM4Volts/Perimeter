@@ -8,7 +8,6 @@ code is a mess rn, will sort it out sometimes in the future.
 
 ## Setup
 
-DO NOT USE BLENDER 3.6.1, addon was tested on 3.6.0, people report that source tools may be broken on 3.6.1
 
 In Blender install Blender Source Tools addon, if you dont have it this wont work https://developer.valvesoftware.com/wiki/Blender_Source_Tools
 Download the addon as a zip using the cool green button up there.
