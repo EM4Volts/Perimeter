@@ -1,5 +1,5 @@
 
-# # Perimeter, a Blender addon for QOL Titanfall 2 modding
+## Perimeter, a Blender addon for QOL Titanfall 2 modding
 
 
 
