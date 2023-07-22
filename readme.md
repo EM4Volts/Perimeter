@@ -21,6 +21,8 @@ in there too, select them in the addons preferences
 
 # how to use:
 
+FOR IMORTED MODELS PLEASE WHEN DECOMPILING IN CROWBAR CHECK THE "REMOVE PATH FROM MATERIAL FILE NAMES"
+
 While it works it still has alot of things to make better/fix, so for now please consider the following:
     
     Do not use the "setup empty rpak shader" on the same material twice. will add reset button in the future.
