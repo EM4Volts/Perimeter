@@ -37,12 +37,6 @@ from .shader import *
 from .animationporting import *
 from .lib_qc import *
 from .rpak import *
-icons_dict = bpy.utils.previews.new( )
-
-icons_dir = "icons"
-
-icons_dict.load( "logo_icon", os.path.join( icons_dir, "logo.png"), 'IMAGE' )
-icons_dict.load( "northstar_icon", os.path.join( icons_dir, "NorthstarLOGO.png" ), 'IMAGE' )
 
 bpy.types.WindowManager.map_file_location = bpy.props.StringProperty( name="Map File Location", subtype='FILE_PATH' )
 
@@ -365,7 +359,7 @@ class NSManagerPanel( Panel ):
         
             # Launch button
             row = layout.row()
-            row.operator( "northstar.launch", text="Launch Northstar", icon_value=icons_dict["northstar_icon"].icon_id )
+            row.operator( "northstar.launch", text="Launch Northstar", icon="PLAY" )
             row.scale_y = 2.0
 
             # Launch Args
@@ -408,7 +402,7 @@ class NSManagerPanel( Panel ):
             # Version label
             version = str( bl_info["version"][0] ) + "." + str( bl_info["version"][1] )
             new_col = box.column( align=True )
-            new_col.label( text="Perimeter v" + version, icon_value=icons_dict["logo_icon"].icon_id )
+            new_col.label( text="Perimeter v" + version, icon="INFO" )
         else:
             layout = self.layout
             row = layout.row()
@@ -1266,7 +1260,6 @@ class NSAddonPreferences( AddonPreferences ):
     def draw( self, context ):
         layout = self.layout
         layout.label( text="Perimeter Settings")
-        layout.label( icon_value=icons_dict["logo_icon"].icon_id )
         layout.prop( self, "ns_launch_exe" )
         layout.prop( self, "texture_path" )
         layout.prop( self, "launch_args" )
@@ -1338,6 +1331,7 @@ classes = ( # classes for the register and unregister functions
     NS_UL_RpakMaterialList,
     NSToggleRpakExportOperator,
     NSSetRpakAssetPathOperator,
+    
 
 
  )
