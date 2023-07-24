@@ -17,7 +17,7 @@
 bl_info = {
     "name": "Perimeter",
     "author": "EM4V",
-    "version": ( 1, 1152 ),
+    "version": ( 1, 1132 ),
     "blender": ( 2, 80, 0),
     "location": "Sidebar > Perimeter",
     "description": "Addon for managing Northstar settings",
@@ -37,6 +37,8 @@ from .shader import *
 from .animationporting import *
 from .lib_qc import *
 from .rpak import *
+from .material_management_panel import *
+
 
 bpy.types.WindowManager.map_file_location = bpy.props.StringProperty( name="Map File Location", subtype='FILE_PATH' )
 
@@ -424,140 +426,6 @@ def refresh_rpak_export_list( self, context):
                 item.do_export = True
                 context.scene.northstar_rpak_materials_enabled = True
 
-class NSEmptyRpakShaderOperator( Operator ):
-    bl_idname = "northstar.empty_rpak_shader"
-    bl_label = "Empty RPAK Shader"
-    bl_description = "Appends the Empty RPAK Ready Shader to the currently selected material"
-
-    def execute( self, context ):
-        
-        
-        obj = bpy.context.active_object
-
-        if obj and obj.type == 'MESH' and obj.material_slots:
-            setup_shader( obj, "", False, True )
-        else:
-            self.report( {'ERROR'}, "No Mesh Selected!" )
-
-        
-        refresh_rpak_export_list( self, context )            
-        return {'FINISHED'}
-
-
-class NSAutoRepakOperator( Operator ):
-    bl_idname = "northstar.auto_repak"
-    bl_label = "Export RPAKs"
-    bl_description = "Automatically make an RPAK for all materials setup for repak in the scene" 
-
-    def execute( self, context ):
-        
-        all_rpak_materials = return_mesh_maps( context )
-        for rpak_material in context.scene.northstar_rpak_materials:
-            if rpak_material.do_export:
-                addon_prefs = context.preferences.addons[__name__].preferences
-
-                pack_all_batfile = r'for %%i in ("%~dp0maps\*") do "%~dp0RePak.exe" "%%i"'
-
-
-                #get the material name
-                material_name = rpak_material.name
-                #get the material path
-                material_path = rpak_material.rpak_asset_path
-                #get the material textures
-                material_textures = all_rpak_materials[rpak_material.name]
-                #get the repak path
-                repak_path = addon_prefs.repak_path
-
-    
-                #check if repak_path/maps/ exists, if not create it
-                if not os.path.exists( repak_path + "/maps/" ):
-                    os.makedirs( os.path.dirname(repak_path) + "/maps/", exist_ok=True)
-                make_rpak_map( material_name, material_path, list(material_textures), os.path.dirname(repak_path) )
-                #check if repak_path/assets/<material_path> exists, if not create it and copy the textures over
-                if not os.path.exists( repak_path + "/assets/" + material_path ):
-                    os.makedirs( os.path.dirname(repak_path) + "/assets/" + material_path, exist_ok=True)
-                    for texture in material_textures:
-                        if texture != None:
-                            shutil.copy( texture, os.path.dirname(repak_path) + "/assets/" + material_path )
-
-                #use convert_textures to convert all textures in the repak_path/assets/<material_path> folder
-                convert_textures( addon_prefs.texconv_path, os.path.dirname(repak_path) + "/assets/" + material_path )
-
-                #make an pack_all.bat file in the repak_path folder
-                with open(  os.path.dirname(repak_path) + "/pack_all.bat", "w" ) as f:
-                    f.write( pack_all_batfile )
-
-                pack_all_path =  os.path.dirname(repak_path) + "/pack_all.bat"
-                call( [pack_all_path], shell=True )      
-                
-        return {'FINISHED'}
-    
-class NSRpakListItem( bpy.types.PropertyGroup ):
-    name: bpy.props.StringProperty()
-    do_export: bpy.props.BoolProperty( default=True )
-    rpak_asset_path: bpy.props.StringProperty( default="" )
-    original_material_name: bpy.props.StringProperty( default="" )
-
-
-class NS_UL_RpakMaterialList( UIList ):
-    def draw_item( self, context, layout, data, item, icon, active_data, active_propname, index ):
-        split = layout.split(  )
-        split.label( text=item.rpak_asset_path, icon="LONGDISPLAY")
-        split.label( text=item.name, icon="EXPORT" if item.do_export else "CANCEL" )
-
-class NSToggleRpakExportOperator( Operator ):
-    bl_idname = "northstar.toggle_rpak_export"
-    bl_label = "Toggle Material RPAK Export"
-    bl_description = "Toggles wether the selected material will be exported in the RPAK"
-
-    def execute( self, context ):
-        selected_index = bpy.context.scene.northstar_rpak_materials_index
-        selected_item = bpy.context.scene.northstar_rpak_materials[selected_index]
-        selected_item.do_export = not selected_item.do_export
-        return {'FINISHED'}
-
-class NSSetRpakAssetPathOperator( Operator ):
-    #make this a popup
-    bl_idname = "northstar.set_rpak_asset_path"
-    bl_label = "Set RPAK Asset Path"
-    bl_description = "Set the RPAK Asset Path for the selected material"
-
-    text_input: StringProperty( name="Path to the material" )
-    change_all: BoolProperty( name="Set for All RPAK Materials", default=False )
-
-    def execute( self, context ):
-        selected_index = bpy.context.scene.northstar_rpak_materials_index
-        selected_item = bpy.context.scene.northstar_rpak_materials[selected_index]
-        text = self.text_input
-        if self.change_all:
-            for item in bpy.context.scene.northstar_rpak_materials:
-                item.rpak_asset_path = text
-                #change the material name to the rpak asset path and the material name
-                #find the material in the scene
-                for material in bpy.data.materials:
-                    if material.name == item.original_material_name:
-                        if not len(text + "/" + item.original_material_name.split( "/" )[-1]) > 63:
-                            material.name = text + "/" + item.original_material_name.split( "/" )[-1]
-                            material.name = material.name.replace( "//", "/" ) 
-                            item.original_material_name = material.name
-                        else:
-                            self.report( {'ERROR'}, "Material name too long! Must be less than 63 characters!" )
-        else:
-            selected_item.rpak_asset_path = text
-            #find the material in the scene
-            for material in bpy.data.materials:
-                if material.name == selected_item.original_material_name:
-                    if not len(text + "/" + selected_item.original_material_name.split( "/" )[-1]) > 63:
-                        material.name = text + "/" + selected_item.original_material_name.split( "/" )[-1]
-                        material.name = material.name.replace( "//", "/" )
-                        selected_item.original_material_name = material.name
-                    else:
-                        self.report( {'ERROR'}, "Material name too long! Must be less than 63 characters!" )
-
-        return {'FINISHED'}
-
-    def invoke( self, context, event ):
-        return context.window_manager.invoke_props_dialog( self )
 
 # Panel for the MDLutils tab
 class NSMDLUtilsPanel( Panel ):
@@ -608,25 +476,7 @@ class NSMDLUtilsPanel( Panel ):
         row.prop( addon_prefs, "texture_path", text="" )
         row.prop( addon_prefs, "diffuse_only", text="Diffuse Only ( More Performant with less detail, speeds up viewport )" )
 
-        repak_box = layout.box( )
-        row = repak_box.column( )
-        row.label( text="RPAK TOOLS", icon="PACKAGE" )
-        row.separator( factor=3.5 )
-        row.label( text="Setup Empty Shader For RPAK", icon="PACKAGE" )
-        row.operator( "northstar.empty_rpak_shader", text="Setup Empty RPAK Shader for Material", icon="SHADING_TEXTURE" )
-        row.separator( factor=3.5 )
 
-        #add rpak list here
-        row.template_list( "NS_UL_RpakMaterialList", "", bpy.context.scene, "northstar_rpak_materials", bpy.context.scene, "northstar_rpak_materials_index", sort_lock=True)
-        row = repak_box.row()
-        row.operator( "northstar.set_rpak_asset_path", text="Set RPAK Asset Path", icon="FILE_FOLDER", depress=True )
-        row.operator( "northstar.toggle_rpak_export", text="Toggle RPAK Export", icon="CHECKMARK", depress=True )
-
-        row = repak_box.column()
-        row.separator( factor=3.5 )
-        row.label( text="Export all RPAK ready Materials in the Scene", icon="EXPORT" )
-        row.scale_y = 2.0
-        row.operator( "northstar.auto_repak", text="Export RPAKs", icon="EXPORT" )
 
 
 
@@ -705,19 +555,13 @@ class NSQCBodygroupOperator( Operator ):
         return {'FINISHED'}
 
 
-# UIList item
-class NSQCListItem( bpy.types.PropertyGroup ):
-    name: bpy.props.StringProperty()
-    enabled: bpy.props.BoolProperty( default=True )
-    override: bpy.props.StringProperty( default="No Override Set!" )
-
 # UIList
 class NSQC_UL_MaterialList( UIList ):
 
     def draw_item( self, context, layout, data, item, icon, active_data, active_propname, index ):
         row = layout.row()
         row.label( text=item.name, icon="MATSPHERE" )
-        row.label( text=item.override, icon="SHADING_TEXTURE" )
+        row.label( text=item.override_material_path, icon="SHADING_TEXTURE" )
         row = layout.row()
 
 class NSQCMaterilListRefreshOperator( Operator ):
@@ -809,17 +653,19 @@ class NSAllInOneTestOperator( Operator ):
             compile_model( context )
             convert_model( context )
 
-            make_testmod( self, context )
+            
 
             if not context.scene.northstar_rpak_materials_enabled:
                 perimeterPrint( "RPAK Materials Disabled, not exporting RPAKs!" )
           
             else:
-                
+                #check if repak_path/rpaks/ exists, if not create it
+                if not os.path.exists( addon_prefs.repak_path + "/rpaks/" ):
+                    os.makedirs( os.path.dirname(addon_prefs.repak_path) + "/rpaks/", exist_ok=True)
                 perimeterPrint( "Exporting RPAKs..." )
                 bpy.ops.northstar.auto_repak()
         
-        
+            make_testmod( self, context )
  
             launch_exe = addon_prefs.ns_launch_exe + "/northstarlauncher.exe"
 
@@ -988,6 +834,12 @@ def make_testmod( self, context ):
             with open( os.path.join( mod_folder, "paks", "rpak.json" ), 'w' ) as f:
                 json.dump( rpak_json_dict, f, indent=4 )
 
+        #cleanup the maps folder, assets folder and all the rpaks and starpaks in their folders
+        if context.scene.northstar_rpak_materials_enabled:
+            shutil.rmtree( os.path.dirname(addon_prefs.repak_path) + "/maps" )
+            shutil.rmtree( os.path.dirname(addon_prefs.repak_path) + "/assets" )
+            shutil.rmtree( os.path.dirname(addon_prefs.repak_path) + "/rpaks" )
+
 
 # Operator for "Convert Model" button
 class NSConvertModelOperator( Operator ):
@@ -1039,22 +891,6 @@ class NSQCFilePanel( bpy.types.Panel ):
             cur.dict_list_string = str( items )
         
         row = layout.row()
-        row.label( text="" )
-        row = layout.box()
-        row.label( text="Material Overrides", icon="MATERIAL_DATA" )
-
-        row.operator( "ns.material_name_popup", text="Set Override", icon="OUTLINER_DATA_GP_LAYER" )
-        row.template_list( "NSQC_UL_MaterialList", "", bpy.context.scene, "northstar_materials", bpy.context.scene, "northstar_materials_index" )
-        row.scale_y = 0.9
-         
-        
-        row.prop( context.scene.vs ,"material_path", text="Material Path" )
-        row.operator( "ns.qc_material_list_refresh", text="Refresh Material List", icon="FILE_REFRESH" )
-       
-        row = layout.column()
-        row.operator( "ns.qc_material_override_qc_writer", text="Update QC File", icon="FILE_REFRESH" )
-        row.scale_y = 1.5
-    
         compile_box = layout.box()
         row = compile_box.row()
         
@@ -1296,10 +1132,12 @@ classes = ( # classes for the register and unregister functions
     NSPreferencesStudiomdlSetup, # preferences setup for studiomdl
 
     NSManagerPanel, # Perimeter tab
+    PerimeterMaterialManagementPanel, # Material Management tab
     NSMDLUtilsPanel, # MDLutils tab
     NSQCFilePanel, # QC File tab    
+
+
     NSGameFolderOperator,  # Game Folder Selector for Studiomdl
- 
     NSLauncherOperator, # Launch button bl_idname: northstar.launcher
     NSFolderSelectorOperator, # Titanfall 2 Folder selection bl_idname: northstar.folder_selector
     NSRefreshModlistOperator, # Refresh modlist button bl_idname: northstar.refresh_modlist
@@ -1320,19 +1158,17 @@ classes = ( # classes for the register and unregister functions
     QCFileSelectorOperator, # QC File Selector button bl_idname: northstar.qc_file_selector
     NSQCParserOperator, # QC Parser button bl_idname: northstar.qc_parser
     NSQCBodygroupOperator, # QC Bodygroup visiblity switcher button bl_idname: ns.qc_bodygroup
-    NSQCListItem, # UIList item for QC Bodygroup visiblity switcher bl_idname: ns.qc_list_item
     NSQC_UL_MaterialList, # UIList for QC Material Overrides bl_idname: ns.qc_material_list
     NSQCMaterilListRefreshOperator, # Refresh QC Material Overrides  bl_idname: ns.qc_material_list_refresh
     NSMaterialNamePopup, # Set Override popup bl_idname: ns.material_name_popup
     NSQCMaterialOverrideQCWriter, # Write QC File button bl_idname: ns.qc_material_override_qc_writer
-    NSEmptyRpakShaderOperator, # Empty Rpak Shader button bl_idname: northstar.empty_rpak_shader
-    NSAutoRepakOperator, 
-    NSRpakListItem,
-    NS_UL_RpakMaterialList,
-    NSToggleRpakExportOperator,
-    NSSetRpakAssetPathOperator,
-    
-
+    PerimeterMaterialMainCollection,
+    PERIMETER_UL_MaterialManagementList,
+    PerimeterMaterialManagementAddMaterialOperator,
+    PerimeterMaterialManagementRemoveMaterialOperator,
+    PeriimeterMaterialManagementAddEmptyShader,
+    PerimeterRefreshShader,
+    PerimeterMaterialManagementPanelExportRPAK,
 
  )
 
@@ -1345,8 +1181,6 @@ def register():
 
     bpy.types.Scene.northstar_items = CollectionProperty( type=NSListItem )
     bpy.types.Scene.northstar_items_index = bpy.props.IntProperty()
-    bpy.types.Scene.northstar_materials = CollectionProperty( type=NSQCListItem )
-    bpy.types.Scene.northstar_materials_index = bpy.props.IntProperty()
     bpy.types.Scene.compiled_mod_name = bpy.props.StringProperty()
     bpy.types.Scene.material_path = bpy.props.StringProperty()
     bpy.types.Scene.ns_qc_selected = bpy.props.BoolProperty()
@@ -1354,9 +1188,12 @@ def register():
     bpy.types.Scene.qc_file_path = bpy.props.StringProperty()
     bpy.types.Scene.qc_model_name = bpy.props.StringProperty()
     bpy.types.Scene.has_exported = bpy.props.BoolProperty()
-    bpy.types.Scene.northstar_rpak_materials = CollectionProperty( type=NSRpakListItem )
-    bpy.types.Scene.northstar_rpak_materials_index = bpy.props.IntProperty()
     bpy.types.Scene.northstar_rpak_materials_enabled = bpy.props.BoolProperty()
+    bpy.types.Scene.perimeter_material_main_collection = CollectionProperty( type=PerimeterMaterialMainCollection )
+    bpy.types.Scene.perimeter_material_main_collection_index = bpy.props.IntProperty()
+    bpy.types.Scene.perimeter_expand_rpak_slots = bpy.props.BoolProperty()
+    bpy.types.Scene.perimeter_expand_rpak_slots_advanced = bpy.props.BoolProperty()
+    bpy.types.Scene.perimeter_rpak_export_path = bpy.props.StringProperty( subtype="DIR_PATH" )
 
 
 
@@ -1365,8 +1202,6 @@ def unregister():
         bpy.utils.unregister_class( cls )
     del bpy.types.Scene.northstar_items
     del bpy.types.Scene.northstar_items_index
-    del bpy.types.Scene.northstar_materials
-    del bpy.types.Scene.northstar_materials_index
     del bpy.types.Scene.compiled_mod_name
     del bpy.types.Scene.material_path
     del bpy.types.Scene.ns_qc_selected
@@ -1374,9 +1209,13 @@ def unregister():
     del bpy.types.Scene.qc_file_path
     del bpy.types.Scene.qc_model_name
     del bpy.types.Scene.has_exported
-    del bpy.types.Scene.northstar_rpak_materials
-    del bpy.types.Scene.northstar_rpak_materials_index
     del bpy.types.Scene.northstar_rpak_materials_enabled
+    del bpy.types.Scene.perimeter_material_main_collection
+    del bpy.types.Scene.perimeter_material_main_collection_index
+    del bpy.types.Scene.perimeter_expand_rpak_slots
+    del bpy.types.Scene.perimeter_expand_rpak_slots_advanced
+    del bpy.types.Scene.perimeter_rpak_export_path
+
 
 
 

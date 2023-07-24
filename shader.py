@@ -217,17 +217,23 @@ def shader_on_material( material, paths, append_textures=True):
 
 
 
-def setup_shader(mesh, paths, append_textures=True, single_material=False):
+def setup_shader(mesh, paths, append_textures=True, single_material=False, is_rna=False):
     # Check if the object is a mesh
-    if mesh.type == 'MESH':
-        # Iterate over the material slots
-        if single_material == False:
-            for slot in mesh.material_slots:
-                material = slot.material
+    if is_rna == True:
+        shader_on_material(mesh, paths, append_textures)
+    else:
+        if mesh.type == 'MESH':
+            # Iterate over the material slots
+            if single_material == False:
+                for slot in mesh.material_slots:
+                    material = slot.material
+                    shader_on_material(material, paths, append_textures)
+            else:
+                material = mesh.active_material
                 shader_on_material(material, paths, append_textures)
-        else:
-            material = mesh.active_material
-            shader_on_material(material, paths, append_textures)
+
+
+    
 
 
 def setup_diffuse_shader(mesh, paths):
@@ -331,8 +337,7 @@ def return_mesh_maps( context ):
                                     else:
                                         ilm = None
                                     
-                             
+                        
                         materials_dict[material.name] = { col, nml, gls, spc, cav, ao, ilm}
-
-    return materials_dict
+                return materials_dict
  
