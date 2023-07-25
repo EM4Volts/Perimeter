@@ -149,7 +149,6 @@ def shader_on_material( material, paths, append_textures=True, is_refresh=False)
 
         except:
             print("[Perimeter] Error loading col node texture")
-            material.node_tree.links.remove(mix_color_node.outputs['Color'], principled_node.inputs['Base Color'])
 
 
         #one of these for each : nml, rgh, spc, cav, ao
@@ -158,21 +157,18 @@ def shader_on_material( material, paths, append_textures=True, is_refresh=False)
             material.node_tree.links.new(combine_node.outputs['Image'], principled_node.inputs['Normal'])
         except:
             print("[Perimeter] Error loading nml node texture")
-            material.node_tree.links.remove(combine_node.outputs['Image'], principled_node.inputs['Normal'])
 
         try:
             roughness_texture_node.image = bpy.data.images.load(gls)
             material.node_tree.links.new(invert_node.outputs['Color'], principled_node.inputs['Roughness'])
         except:
             print("[Perimeter] Error loading gls node texture")
-            material.node_tree.links.remove(invert_node.outputs['Color'], principled_node.inputs['Roughness'])
 
         try:
             specular_texture_node.image = bpy.data.images.load(spc)
             material.node_tree.links.new(specular_texture_node.outputs['Color'], principled_node.inputs['Specular'])
         except:
             print("[Perimeter] Error loading spc node texture")
-            material.node_tree.links.remove(specular_texture_node.outputs['Color'], principled_node.inputs['Specular'])
 
         try:
             image_texture2_node.image = bpy.data.images.load(cav)
@@ -192,7 +188,6 @@ def shader_on_material( material, paths, append_textures=True, is_refresh=False)
 
         except:
             print("[Perimeter] Error loading ilm node texture")
-            material.node_tree.links.remove(emissive_texture_node.outputs['Color'], principled_node.inputs['Emission'])
 
 
     if is_refresh == True:
