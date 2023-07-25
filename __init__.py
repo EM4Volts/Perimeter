@@ -1,16 +1,16 @@
 #     Blender addon for managing Northstar settings
 #     Copyright (C) 2023 EM4Volts
-#  
+#
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
 #     the Free Software Foundation, either version 3 of the License, or
 #     (at your option) any later version.
-#  
+#
 #     This program is distributed in the hope that it will be useful,
 #     but WITHOUT ANY WARRANTY; without even the implied warranty of
 #     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #     GNU General Public License for more details.
-#  
+#
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -87,7 +87,7 @@ class NSLauncherOperator( Operator ):
 
         perimeterPrint( "Launching Northstar..." )
 
-        
+
         proc = Popen( [launch_exe, addon_prefs.launch_args], creationflags=CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS )
         return {'FINISHED'}
 
@@ -146,11 +146,11 @@ class NSExportModelOperator( Operator ):
     bl_description = "Export Model"
     def execute( self, context ):
         # Code to export the model
-        
+
         perimeterPrint( "Exporting model..." )
 
         return {'FINISHED'}
-    
+
     def invoke( self, context, event ):
         context.scene.has_exported = True
         bpy.ops.wm.call_menu(name="SMD_MT_ExportChoice")
@@ -281,7 +281,7 @@ class NSAnimationPortingStageOneOperator( bpy.types.Operator ):
 class NSAnimationPortingStageTwoOperator( Operator ):
     bl_idname = "northstar.animation_porting_stage_two"
     bl_label = "Animation Porting Stage Two"
-    
+
     filepath: bpy.props.StringProperty( subtype="DIR_PATH" )
 
     def execute( self, context ):
@@ -290,11 +290,11 @@ class NSAnimationPortingStageTwoOperator( Operator ):
         import_animation_lengths( folder_path )
         perimeterPrint( "Performing animation porting stage two..." )
         return {'FINISHED'}
-    
+
     def invoke( self, context, event ):
         context.window_manager.fileselect_add( self )
         return {'RUNNING_MODAL'}
-    
+
 # Operator for "All in One > Test" button
 class NSAppendShadersToMeshesOperator( Operator ):
     bl_idname = "northstar.append_shaders"
@@ -303,7 +303,7 @@ class NSAppendShadersToMeshesOperator( Operator ):
 
     def execute( self, context ):
 
-        
+
         # Get the active object
         obj = bpy.context.active_object
 
@@ -321,7 +321,6 @@ class NSAppendShadersToMeshesOperator( Operator ):
             else:
                 perimeterPrint( "Diffuse Only Disabled! Using all textures." )
                 setup_shader( obj, path , True, False)
-        refresh_rpak_export_list( self, context )       
         return {'FINISHED'}
 
 # UIList item
@@ -358,7 +357,7 @@ class NSManagerPanel( Panel ):
 
         if addon_prefs.perimeter_panel_enabled:
             layout = self.layout
-        
+
             # Launch button
             row = layout.row()
             row.operator( "northstar.launch", text="Launch Northstar", icon="PLAY" )
@@ -430,12 +429,12 @@ def refresh_rpak_export_list( self, context):
 # Panel for the MDLutils tab
 class NSMDLUtilsPanel( Panel ):
     bl_idname = "SIDEBAR_PT_ns_mdl_utils"
-    bl_label = "Materials / Repak"
+    bl_label = "Load Game Materials"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Northstar"
 
-    
+
 
     def draw( self, context ):
 
@@ -443,7 +442,7 @@ class NSMDLUtilsPanel( Panel ):
 
         layout = self.layout
 
-        
+
 
         #ANIMATIONS TAB
         #ANIMATIONS TAB
@@ -453,7 +452,7 @@ class NSMDLUtilsPanel( Panel ):
         # Compare Animation Files button
         row = box.column()
         row.label( text="Animations", icon="ANIM_DATA" )
-        
+
 
         # Animation Porting Stage One button
         row = box.row()
@@ -480,9 +479,9 @@ class NSMDLUtilsPanel( Panel ):
 
 
 
-    
 
-global bg_dict 
+
+global bg_dict
 bg_dict = {}
 
 
@@ -492,7 +491,7 @@ class NSQCParserOperator( Operator ):
     bl_description = "Parse QC File"
 
     filepath: bpy.props.StringProperty( subtype="FILE_PATH" )
-    
+
 
     def execute( self, context ):
         addon_prefs = context.preferences.addons[__name__].preferences
@@ -597,43 +596,12 @@ class NSMaterialNamePopup( Operator ):
     def invoke( self, context, event ):
         return context.window_manager.invoke_props_dialog( self )
 
-
-class NSQCMaterialOverrideQCWriter( Operator ):
-    bl_idname = "ns.qc_material_override_qc_writer"
-    bl_label = "Write QC File"
-    bl_description = "Write QC File"
-    #get current qc file
-    #get current override material
-    #write override material to qc file
-
-    def execute( self, context ):
-        addon_prefs = context.preferences.addons[__name__].preferences
-        qc_file_path = bpy.path.abspath( context.scene.qc_file_path )
-
-        #get material_path property
-        material_path = bpy.context.scene.material_path
-        rename_material_list = []
-        no_overrides = True
-
-        for i in bpy.context.scene.northstar_materials:
-            if i.override != "No Override Set!":    
-                no_overrides = False
-                renamemat_string = '$renamematerial "' + material_path + "/" + i.name + '" "' + i.override + '"'
-                rename_material_list.append( renamemat_string )
-        if no_overrides:
-            perimeterPrint( "No Overrides Set, Not Writing to QC File!" )
-        else:
-            
-            save_material_override( qc_file_path, rename_material_list )
-
-        return {'FINISHED'}
-
 # Operator for "All in One > Test" button
 class NSAllInOneTestOperator( Operator ):
     bl_idname = "northstar.all_in_one_test"
     bl_label = "All in One"
     bl_description = "All in One"
-    
+
     def execute( self, context ):
         perimeterPrint( "All in One Test..." )
         #export model
@@ -650,23 +618,41 @@ class NSAllInOneTestOperator( Operator ):
             #export model
             perimeterPrint( "Exporting model..." )
 
+            qc_file_path = bpy.path.abspath( context.scene.qc_file_path )
+
+
+            #save_material_override( qc_file_path, perimeter_return_materialoverrides( context ) )
+
             compile_model( context )
             convert_model( context )
 
-            
+
+
+
+            mod_path = make_testmod( self, context )
 
             if not context.scene.northstar_rpak_materials_enabled:
                 perimeterPrint( "RPAK Materials Disabled, not exporting RPAKs!" )
-          
+
             else:
-                #check if repak_path/rpaks/ exists, if not create it
-                if not os.path.exists( addon_prefs.repak_path + "/rpaks/" ):
-                    os.makedirs( os.path.dirname(addon_prefs.repak_path) + "/rpaks/", exist_ok=True)
+
                 perimeterPrint( "Exporting RPAKs..." )
-                bpy.ops.northstar.auto_repak()
-        
-            make_testmod( self, context )
- 
+                temp_rpak_export_path = context.scene.perimeter_rpak_export_path
+                context.scene.perimeter_rpak_export_path = mod_path + "/paks/"
+                for material in context.scene.perimeter_material_main_collection:
+                    if material.export_rpak:
+                        perimeter_make_rpak( context, material )
+
+                context.scene.perimeter_rpak_export_path = temp_rpak_export_path
+
+                rpak_json_dict = {"Postload": {}}
+                for file in os.listdir( os.path.join( mod_path, "paks" ) ):
+                    if file.endswith( "pak" ):
+                        rpak_json_dict["Postload"][file] = "common.rpak"
+                with open( os.path.join( mod_path, "paks", "rpak.json" ), 'w' ) as f:
+                    json.dump( rpak_json_dict, f, indent=4 )
+
+
             launch_exe = addon_prefs.ns_launch_exe + "/northstarlauncher.exe"
 
             perimeterPrint( "Launching Northstar..." )
@@ -681,17 +667,33 @@ def compile_model( context ):
 
     #exectue studiomdl.exe with subprocess
     addon_prefs = context.preferences.addons[__name__].preferences
+    
     qc_file_path = bpy.path.abspath( context.scene.qc_file_path )
     qc_file_name = get_model_name( qc_file_path )
     perimeterPrint( qc_file_name )
+    renamemateriallines = []
+    write_material_override = False
+    for material in context.scene.perimeter_material_main_collection:
+        if material.material_override_enabled:
+            renameline = '$renamematerial "' + material.blender_material.name + '" "' + material.material_override_path + '"' 
+            renamemateriallines.append( renameline )
+            write_material_override = True
+
+    if write_material_override:
+        save_material_override( qc_file_path, renamemateriallines)
+
     #get the studiomdl.exe path
     #make stripped gameinfo path by stripping the file name from the gameinfo path
-    stripped_gameinfo_path = os.path.dirname(addon_prefs.gameinfo_path)     
+    if context.scene.perimeter_empty_cdmaterials:
+        print("removing cdmaterials")
+        remove_cdmaterials( qc_file_path )
+    stripped_gameinfo_path = os.path.dirname(addon_prefs.gameinfo_path)
     stuidmdlpath_complete = addon_prefs.mdlstudio_path
     gameinfopaath_complete = '"' + stripped_gameinfo_path + '\\"'
     qc_file_path = '"' + qc_file_path + '"'
     studiomdl_args = f"-game {gameinfopaath_complete} -nop4 -verbose"
     perimeterPrint( f" Compiling with command {stuidmdlpath_complete} {studiomdl_args} {qc_file_path}, please wait...")
+
     studiomdlcommand = f"{stuidmdlpath_complete} {studiomdl_args} {repr(qc_file_path)}"
     qc_path = os.path.dirname( qc_file_path )
     cmd = f'"{stuidmdlpath_complete}" {studiomdl_args} {qc_file_path}'.replace( "\\", "/")
@@ -708,6 +710,8 @@ def compile_model( context ):
     if mdlshit_line != "":
         context.scene.mdlshit_mdl = mdlshit_line
         return mdlshit_line
+    
+    context.scene.has_exported = False
 
 
 # Operator for "Compile Model" button
@@ -729,15 +733,15 @@ class NSCompileModelOperator( Operator ):
 
 
 def convert_model( context ):
-    
+
     mdl_extensions = [".mdl", ".phy", ".vvd", ".vtx"]
     addon_prefs = context.preferences.addons[__name__].preferences
     if context.scene.mdlshit_mdl == "":
         perimeterPrint( "Converting Model failed, no precompiled model in scene!" )
     else:
-        
+
         mdl_name = os.path.basename( context.scene.mdlshit_mdl )
-        
+
 
         mdlshit_mdl_path = os.path.dirname( context.scene.mdlshit_mdl )
 
@@ -768,7 +772,7 @@ def convert_model( context ):
         perimeterPrint( "Converted Model: " + conv_mdl_path)
 
         return conv_mdl_path
-        
+
 
 
 def make_testmod( self, context ):
@@ -808,8 +812,8 @@ def make_testmod( self, context ):
         #make the model folder in the mod folder
         os.makedirs( os.path.join( mod_folder + "/mod/" + model_folder ), exist_ok=True )
         perimeterPrint( model_name )
-        
-        #copy the model to the mod folder and then remove the _conv 
+
+        #copy the model to the mod folder and then remove the _conv
         folder_from = os.path.dirname( context.scene.mdlshit_mdl ) + "/" + os.path.basename( context.scene.mdlshit_mdl[:-4] + "_conv.mdl" )
         folder_to = os.path.join( mod_folder + "/mod/" + model_folder )
         perimeterPrint( folder_from )
@@ -819,27 +823,7 @@ def make_testmod( self, context ):
         #rename the model to remove the _conv
         os.replace( os.path.join( folder_to, os.path.basename( context.scene.mdlshit_mdl[:-4] + "_conv.mdl" ) ), os.path.join( folder_to, os.path.basename( context.scene.mdlshit_mdl[:-4] + ".mdl" ) ) )
 
-        #make an "paks" folder in the testmods folder, copy all the files in the rpak_path/rpaks to it that start with "PERIMETER" and end with lowercase "pak"
-        if context.scene.northstar_rpak_materials_enabled:
-            os.makedirs( os.path.join( mod_folder, "paks" ) )
-            for file in os.listdir( os.path.dirname(addon_prefs.repak_path) + "/rpaks" ):
-                if file.startswith( "perimeter" ) and file.endswith( "pak" ):
-                    shutil.copy( os.path.join( os.path.dirname(addon_prefs.repak_path) + "/rpaks", file ), os.path.join( mod_folder, "paks" ) )
-        #make rpak.json in the paks folder, make an entry in the json for each .rpak file in the paks folder like this {"Postload": {"booleangemini.rpak": "common.rpak","booleangemini_decals.rpak": "common.rpak"}}, common.rpak should be existing for each rpak
-        if context.scene.northstar_rpak_materials_enabled:
-            rpak_json_dict = {"Postload": {}}
-            for file in os.listdir( os.path.join( mod_folder, "paks" ) ):
-                if file.endswith( "pak" ):
-                    rpak_json_dict["Postload"][file] = "common.rpak"
-            with open( os.path.join( mod_folder, "paks", "rpak.json" ), 'w' ) as f:
-                json.dump( rpak_json_dict, f, indent=4 )
-
-        #cleanup the maps folder, assets folder and all the rpaks and starpaks in their folders
-        if context.scene.northstar_rpak_materials_enabled:
-            shutil.rmtree( os.path.dirname(addon_prefs.repak_path) + "/maps" )
-            shutil.rmtree( os.path.dirname(addon_prefs.repak_path) + "/assets" )
-            shutil.rmtree( os.path.dirname(addon_prefs.repak_path) + "/rpaks" )
-
+        return mod_folder
 
 # Operator for "Convert Model" button
 class NSConvertModelOperator( Operator ):
@@ -851,18 +835,18 @@ class NSConvertModelOperator( Operator ):
         if not context.scene.mdlshit_mdl.endswith( ".mdl" ):
             self.report( {'ERROR'}, "No precompiled model in scene!" )
         else:
-        
-            conv_mdl = convert_model( context )  
+
+            conv_mdl = convert_model( context )
 
             if os.path.isfile( conv_mdl ):
                 self.report( {'INFO'}, "Converted Model: " + conv_mdl )
-        
+
 
         return {'FINISHED'}
 
 
 
-    
+
 class NSQCFilePanel( bpy.types.Panel ):
     bl_idname = "SIDEBAR_PT_ns_qc_file"
     bl_label = "QC File Tools"
@@ -877,9 +861,8 @@ class NSQCFilePanel( bpy.types.Panel ):
         row.operator( "northstar.qc_parser", text="Select QC File", icon="FILE_FOLDER" )
         layout = self.layout
         row = layout.column()
-        row.label( text="QC File Info", icon="FILE" )
         qc_file_name = context.scene.qc_model_name
-        row.label( text=qc_file_name, icon="OUTLINER_OB_MESH" ) 
+        row.label( text=qc_file_name, icon="OUTLINER_OB_MESH" )
 
         # Iterate over the dictionary
         global bg_dict
@@ -889,14 +872,14 @@ class NSQCFilePanel( bpy.types.Panel ):
             cur = row.operator( "ns.qc_bodygroup", text=name )
             cur.item_name = name
             cur.dict_list_string = str( items )
-        
+
         row = layout.row()
         compile_box = layout.box()
         row = compile_box.row()
-        
-        
+
+
         row.label( text="QC Compilation", icon="MEMORY" )
-        
+
         row.prop( context.scene, "compiled_mod_name", text="Compiled Name" )
         row = compile_box.row()
 
@@ -917,25 +900,28 @@ class NSQCFilePanel( bpy.types.Panel ):
         button_row.operator( "northstar.convert_model", text="Convert Model", icon="MOD_WIREFRAME" )
         """
 
-        
+
         # All in One Test button
         row = compile_box.column()
         row.operator( "northstar.export_model", text="Export", icon="EXPORT" )
+        row = compile_box.row()
+        row.prop( context.scene, "perimeter_empty_cdmaterials", text="Overwriting CDMATERIALS" if context.scene.perimeter_empty_cdmaterials else "Not Overwriting CDMATERIALS", icon="CHECKMARK" if context.scene.perimeter_empty_cdmaterials else "CANCEL", expand = True)
+
+        row.prop( context.scene, "northstar_rpak_materials_enabled", text="Include RPAKs in Testmod" if context.scene.northstar_rpak_materials_enabled else "RPAKs not Exporting into Testmod", icon="CHECKMARK" if context.scene.northstar_rpak_materials_enabled else "CANCEL", expand = True)
         row = compile_box.column()
         if context.scene.has_exported:
             row.enabled = True
         else:
             row.enabled = False
-        row.prop( addon_prefs, "testmod_make_rpak", text="Include RPAKs in Testmod" if addon_prefs.testmod_make_rpak else "RPAKs not Exporting into Testmod", icon="CHECKMARK" if addon_prefs.testmod_make_rpak else "CANCEL", expand = False)
         row.operator( "northstar.all_in_one_test", text="Compile, Convert and Test!", icon="PLAY" )
-        row.scale_y = 2.0 
+        row.scale_y = 2.0
         row = compile_box.column()
-       
+
          # Increase button height
-        
+
         #add updateable lables for the qc file path and its informations
         row = compile_box.row()
-        
+
 
 class NSGameFolderOperator( Operator ):
     bl_idname = "northstar.game_folder"
@@ -965,8 +951,8 @@ class NSGameFolderOperator( Operator ):
     def invoke( self, context, event ):
         context.window_manager.fileselect_add( self )
         return {'RUNNING_MODAL'}
-        
-    
+
+
 class NSPreferencesStudiomdlSetup( Operator ):
     bl_idname = "ns.studiomdlsetup"
     bl_label = "Setup Compiler"
@@ -983,7 +969,7 @@ class NSPreferencesStudiomdlSetup( Operator ):
     default='portal2',
     )
 
-    game_path: bpy.props.StringProperty( 
+    game_path: bpy.props.StringProperty(
         subtype="DIR_PATH",
         name="Game Path"
     )
@@ -992,11 +978,11 @@ class NSPreferencesStudiomdlSetup( Operator ):
         addon_prefs = context.preferences.addons[__name__].preferences
         addon_prefs.selected_game = self.selected_game
         return {'FINISHED'}
-    
+
     def invoke( self, context, event ):
 
         return context.window_manager.invoke_props_dialog( self )
-    
+
     def draw( self, context ):
         addon_prefs = context.preferences.addons[__name__].preferences
         row = self.layout.column()
@@ -1012,24 +998,24 @@ class NSPreferencesStudiomdlSetup( Operator ):
 class NSAddonPreferences( AddonPreferences ):
     bl_idname = __name__
 
-    ns_launch_exe: StringProperty( 
+    ns_launch_exe: StringProperty(
         name="Titanfall 2 Folder",
         default="No Folder Selected!",
         subtype='DIR_PATH'
      )
 
-    launch_args: StringProperty( 
+    launch_args: StringProperty(
         name="Launch Args",
         default="",
         description="Arguments to pass when launching Northstar"
      )
 
-    texture_path: StringProperty( 
+    texture_path: StringProperty(
         name="Texture Path",
         subtype='DIR_PATH'
      )
 
-    diffuse_only: bpy.props.BoolProperty( 
+    diffuse_only: bpy.props.BoolProperty(
         name="Only use diffuse textures for shaders",
         description="Only uses a basic diffuse texture for shaders, instead of the full set of textures",
         default=False
@@ -1091,7 +1077,7 @@ class NSAddonPreferences( AddonPreferences ):
     )
 
 
-    
+
     selected_materials: bpy.props.CollectionProperty( type=bpy.types.PropertyGroup )
     def draw( self, context ):
         layout = self.layout
@@ -1134,7 +1120,7 @@ classes = ( # classes for the register and unregister functions
     NSManagerPanel, # Perimeter tab
     PerimeterMaterialManagementPanel, # Material Management tab
     NSMDLUtilsPanel, # MDLutils tab
-    NSQCFilePanel, # QC File tab    
+    NSQCFilePanel, # QC File tab
 
 
     NSGameFolderOperator,  # Game Folder Selector for Studiomdl
@@ -1161,7 +1147,6 @@ classes = ( # classes for the register and unregister functions
     NSQC_UL_MaterialList, # UIList for QC Material Overrides bl_idname: ns.qc_material_list
     NSQCMaterilListRefreshOperator, # Refresh QC Material Overrides  bl_idname: ns.qc_material_list_refresh
     NSMaterialNamePopup, # Set Override popup bl_idname: ns.material_name_popup
-    NSQCMaterialOverrideQCWriter, # Write QC File button bl_idname: ns.qc_material_override_qc_writer
     PerimeterMaterialMainCollection,
     PERIMETER_UL_MaterialManagementList,
     PerimeterMaterialManagementAddMaterialOperator,
@@ -1194,6 +1179,9 @@ def register():
     bpy.types.Scene.perimeter_expand_rpak_slots = bpy.props.BoolProperty()
     bpy.types.Scene.perimeter_expand_rpak_slots_advanced = bpy.props.BoolProperty()
     bpy.types.Scene.perimeter_rpak_export_path = bpy.props.StringProperty( subtype="DIR_PATH" )
+    bpy.types.Scene.perimeter_empty_cdmaterials = bpy.props.BoolProperty()
+
+    print( __name__ )
 
 
 
@@ -1215,7 +1203,7 @@ def unregister():
     del bpy.types.Scene.perimeter_expand_rpak_slots
     del bpy.types.Scene.perimeter_expand_rpak_slots_advanced
     del bpy.types.Scene.perimeter_rpak_export_path
-
+    del bpy.types.Scene.perimeter_empty_cdmaterials
 
 
 
