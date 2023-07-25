@@ -87,10 +87,10 @@ def save_material_override( qc_file_path, material_override ):
                     qc_file_lines.remove( line )
             qc_file.close(  )
         with open( qc_file_path, "w" ) as qc_file:
+            for line in material_override:
+                qc_file_lines.append( line + "\n" )
             qc_file.writelines( qc_file_lines )
 
-            for line in material_override:
-                qc_file.write( line + "\n")
 
             qc_file.close(  )
 
