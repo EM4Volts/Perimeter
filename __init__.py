@@ -612,7 +612,6 @@ class NSAllInOneTestOperator( Operator ):
         #return {'FINISHED'}
         addon_prefs = context.preferences.addons[__name__].preferences
         if not context.scene.qc_file_path.endswith( ".qc" ):
-            print(context.scene.qc_file_path)
             self.report( {'ERROR'}, "No QC File Selected!" )
         else:
             #export model
@@ -685,7 +684,6 @@ def compile_model( context ):
     #get the studiomdl.exe path
     #make stripped gameinfo path by stripping the file name from the gameinfo path
     if context.scene.perimeter_empty_cdmaterials:
-        print("removing cdmaterials")
         remove_cdmaterials( qc_file_path )
     stripped_gameinfo_path = os.path.dirname(addon_prefs.gameinfo_path)
     stuidmdlpath_complete = addon_prefs.mdlstudio_path
@@ -702,7 +700,6 @@ def compile_model( context ):
     for line in compiler.stdout.decode( "utf-8" ).split( "\n" ):
         #strip line of whitespaces
         line = line.strip()
-        print( line )
         if line.startswith( "writing" ):
             if line.endswith( ".mdl:" ):
                 line= line.replace( "writing ", "" )[:-1]
@@ -1181,7 +1178,6 @@ def register():
     bpy.types.Scene.perimeter_rpak_export_path = bpy.props.StringProperty( subtype="DIR_PATH" )
     bpy.types.Scene.perimeter_empty_cdmaterials = bpy.props.BoolProperty()
 
-    print( __name__ )
 
 
 

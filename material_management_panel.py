@@ -652,8 +652,6 @@ def perimeter_make_rpak( context, material_collection ):
     #use convert_textures to convert all textures in the repak_path/assets/<material_path> folder
     convert_textures( addon_prefs.texconv_path, os.path.dirname(repak_path) + "/perimeter_assets/" + rpak_asset_path )
 
-    print( rpak_map )
-
     #get the path to the currently running script
     script_path = os.path.dirname(os.path.realpath(__file__))
 
