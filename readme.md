@@ -23,23 +23,15 @@ in there too, select them in the addons preferences
 
 # how to use:
 
-FOR IMORTED MODELS PLEASE WHEN DECOMPILING IN CROWBAR CHECK THE "REMOVE PATH FROM MATERIAL FILE NAMES"
-
-While it works it still has alot of things to make better/fix, so for now please consider the following:
-    
-    Do not use the "setup empty rpak shader" on the same material twice. will add reset button in the future.
-
-    dont use material overrides if you arent completely sure on how to make then work, they are wonky. 
-
+most of the new rpak panel should be selfexplainatory
 
 its intended to be used for the final export part, as its way of handling some things are specific, for help consult the images below or contact me on discord ```4v_```
 
-These 3 images should explain it a bit. 
+These images
 
 
 ![perimeter_panel](https://github.com/EM4Volts/Perimeter/blob/main/docs/perimeter_panel.jpg?raw=true)
-![materials_panel](https://github.com/EM4Volts/Perimeter/blob/main/docs/materials_panel.jpg?raw=true)
-![qc_panel](https://github.com/EM4Volts/Perimeter/blob/main/docs/qc_panel.jpg?raw=true)
+
 
 ## Issues / Bugs
 
