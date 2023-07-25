@@ -136,8 +136,10 @@ def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_s
     files_sub_preset_json["visibilityflags"] = rpak_params["visibilityflags"]
 
     rpak_map_json["files"].append( files_sub_preset_json )
-    json_map_name = f'perimeter_repak_map_{rpak_params["rpak_name"]}.json'
+    
 
+    repak_path = os.path.dirname(addon_prefs.repak_path) 
+    json_map_name = f'{repak_path}/perimeter_repak_map_{rpak_params["rpak_name"]}.json'
     json.dump(rpak_map_json, open(f"{json_map_name}", "w"), indent=4)
 
     return json_map_name

@@ -647,7 +647,8 @@ class NSAllInOneTestOperator( Operator ):
                 rpak_json_dict = {"Postload": {}}
                 for file in os.listdir( os.path.join( mod_path, "paks" ) ):
                     if file.endswith( "pak" ):
-                        rpak_json_dict["Postload"][file] = "common.rpak"
+                        if not file.endswith( "starpak" ):
+                            rpak_json_dict["Postload"][file] = "common.rpak"
                 with open( os.path.join( mod_path, "paks", "rpak.json" ), 'w' ) as f:
                     json.dump( rpak_json_dict, f, indent=4 )
 
