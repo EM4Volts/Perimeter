@@ -656,8 +656,9 @@ def perimeter_make_rpak( context, material_collection ):
 
     map_absolute_path = rpak_map
 
-    cmd = f'"{repak_path} {map_absolute_path}"'
+    cmd = f'"{repak_path}" "{map_absolute_path}"'
 
+    print(cmd)
     call( cmd, shell=True )
 
     #cleanup, delete map file and the repak_path/assets/<material_path> folder
