@@ -79,19 +79,25 @@ def save_material_override( qc_file_path, material_override ):
 
     if not qc_file_path.lower().endswith( ".qc" ):
         return ""
+        
     else:
+    
+        lines_to_remove = []
+    
         with open( qc_file_path, "r" ) as qc_file:
             qc_file_lines = qc_file.readlines(  )
             for line in qc_file_lines:
-                if line.lower().startswith("$renamematerial"):
-                    qc_file_lines.remove( line )
+                print( line)
+                if line.startswith("$renamematerial"):
+                    lines_to_remove.append( line )
+            
+            for line in lines_to_remove:
+                qc_file_lines.remove( line )
             qc_file.close(  )
         with open( qc_file_path, "w" ) as qc_file:
             for line in material_override:
                 qc_file_lines.append( line + "\n" )
             qc_file.writelines( qc_file_lines )
-
-
             qc_file.close(  )
 
 def remove_cdmaterials( qc_file_path ):

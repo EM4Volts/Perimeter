@@ -696,10 +696,12 @@ def compile_model( context ):
     studiomdlcommand = f"{stuidmdlpath_complete} {studiomdl_args} {repr(qc_file_path)}"
     qc_path = os.path.dirname( qc_file_path )
     cmd = f'"{stuidmdlpath_complete}" {studiomdl_args} {qc_file_path}'.replace( "\\", "/")
+    
     compiler = run( cmd, shell=True, capture_output=True)
     mdlshit_line = ""
     for line in compiler.stdout.decode( "utf-8" ).split( "\n" ):
         #strip line of whitespaces
+        print(line)
         line = line.strip()
         if line.startswith( "writing" ):
             if line.endswith( ".mdl:" ):
