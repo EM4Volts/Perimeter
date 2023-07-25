@@ -90,7 +90,7 @@ def save_material_override( qc_file_path, material_override ):
             qc_file.writelines( qc_file_lines )
 
             for line in material_override:
-                qc_file.write( line )
+                qc_file.writelines( line )
 
             qc_file.close(  )
 
