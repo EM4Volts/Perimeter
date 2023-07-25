@@ -77,39 +77,42 @@ def return_bodygroup_dict( qc_file_path ):
                     
 def save_material_override( qc_file_path, material_override ):
 
-    start_renamematerials = 0
-    if not qc_file_path.endswith( ".qc" ):
+    if not qc_file_path.lower().endswith( ".qc" ):
         return ""
     else:
         with open( qc_file_path, "r" ) as qc_file:
             qc_file_lines = qc_file.readlines(  )
-            #find the line that starts with lowercase $modelname, start writing below that line 
             for line in qc_file_lines:
-                if line.startswith( "$modelname" ):
-                    start_renamematerials = qc_file_lines.index( line ) + 1
-                    break
+                if line.lower().startswith("$renamematerial"):
+                    qc_file_lines.remove( line )
             qc_file.close(  )
         with open( qc_file_path, "w" ) as qc_file:
-            qc_file.writelines( qc_file_lines[:start_renamematerials] )
-            qc_file.write( "\n" )
-            for str in material_override:
-                qc_file.write( str )
-                qc_file.write( "\n" )
-            qc_file.writelines( qc_file_lines[start_renamematerials:] )
-            qc_file.close(  )      
+            qc_file.writelines( qc_file_lines )
 
-def read_material_override( qc_file_path ):
-    material_override = []
-    start_renamematerials = 0
-    if not qc_file_path.endswith( ".qc" ):
+            for line in material_override:
+                qc_file.write( line )
+
+            qc_file.close(  )
+
+def remove_cdmaterials( qc_file_path ):
+    
+    if not qc_file_path.lower().endswith( ".qc" ):
         return ""
     else:
         with open( qc_file_path, "r" ) as qc_file:
             qc_file_lines = qc_file.readlines(  )
-            #find the line that starts with lowercase $modelname, start writing below that line 
+
             for line in qc_file_lines:
-                if line.startswith( "$renamematerials" ):
-                    start_renamematerials = qc_file_lines.index( line ) + 1
-                    break
+                if line.lower().startswith( "$cdmaterials".lower( ) ):
+                    #remove line and store the position of the line
+                    cdmaterials_line = qc_file_lines.index( line )
+                    qc_file_lines.remove( line )
+
+            #write an empty cdmaterials line at the position of the old cdmaterials line
+            qc_file_lines.insert( cdmaterials_line, f'$cdmaterials ""\n' )
+
             qc_file.close(  )
-        return material_override
+
+        with open( qc_file_path, "w" ) as qc_file:
+            qc_file.writelines( qc_file_lines )
+            qc_file.close(  )
