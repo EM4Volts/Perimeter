@@ -656,7 +656,7 @@ def perimeter_make_rpak( context, material_collection ):
 
     map_absolute_path = rpak_map
 
-    cmd = f{repak_path" "map_absolute_path}
+    cmd = f'"{repak_path} {map_absolute_path}"'
 
     call( cmd, shell=True )
 
