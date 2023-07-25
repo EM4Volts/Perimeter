@@ -18,13 +18,19 @@ import json, os, sys, shutil, subprocess, bpy
 
 def convert_textures( texconv_path, asset_path ):
      for filename in os.scandir(asset_path):
-          if filename.name.endswith("nml.png"):
-               os.system(f"{texconv_path} -f BC5_UNORM -srgb -ft dds " + filename.path + " -o " + asset_path)
-          else:
-               if filename.name.endswith("gls.png"):
-                    os.system(f"{texconv_path} -f BC4_UNORM -srgbi -ft dds " + filename.path + " -o " + asset_path)
-               else:
-                    os.system(f"{texconv_path} -f BC1_UNORM_SRGB -srgbi -ft dds " + filename.path + " -o " + asset_path)
+        if filename.name.endswith("nml.png"):
+            tex_conv_args_str = f'"{texconv_path}" -f BC5_UNORM -srgb -ft dds " + ""{filename.path}"" + " -o " + ""{asset_path}""'
+            tex_conv_args_list = [texconv_path, "-f", "BC5_UNORM", "-srgb", "-ft", "dds", filename.path, "-o", asset_path]
+        else:
+            if filename.name.endswith("gls.png"):
+                tex_conv_str = f'"{texconv_path}" -f BC4_UNORM -srgbi -ft dds " + ""{filename.path}"" + " -o " + ""{asset_path}""'
+                tex_conv_args_list = [texconv_path, "-f", "BC4_UNORM", "-srgbi", "-ft", "dds", filename.path, "-o", asset_path]
+            else:
+                tex_conv_str = f'""{texconv_path}"" -f BC1_UNORM_SRGB -srgbi -ft dds " + ""{filename.path}"" + " -o " + ""{asset_path}""'
+                tex_conv_args_list = [texconv_path, "-f", "BC1_UNORM_SRGB", "-srgbi", "-ft", "dds", filename.path, "-o", asset_path]
+
+        print( tex_conv_str)
+        subprocess.call( tex_conv_args_list , shell=True )
 
 
 def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_slot_name):

@@ -663,7 +663,7 @@ def perimeter_make_rpak( context, material_collection ):
 
     #cleanup, delete map file and the repak_path/assets/<material_path> folder
 
-    shutil.rmtree( os.path.dirname(repak_path) + "/perimeter_assets/" + rpak_asset_path )
+    #shutil.rmtree( os.path.dirname(repak_path) + "/perimeter_assets/" + rpak_asset_path )
     os.remove( map_absolute_path )
 
 
