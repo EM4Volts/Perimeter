@@ -131,11 +131,11 @@ def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_s
     files_sub_preset_json["type"] = rpak_params["rpak_type"]
     files_sub_preset_json["subtype"] = rpak_params["rpak_subtype"]
     files_sub_preset_json["surface"] = rpak_params["rpak_surface_type"]
-    if not files_sub_preset_json["flags"] == "":
+    if not rpak_params["flag_1"] == "":
         files_sub_preset_json["flags"] = rpak_params["flag_1"]
-    if not files_sub_preset_json["flags2"] == "":
+    if not rpak_params["flag_2"] == "":
         files_sub_preset_json["flags2"] = rpak_params["flag_2"]
-    if not files_sub_preset_json["shaderset"] == "":
+    if not rpak_params["shaderset"] == "":
         files_sub_preset_json["shaderset"] = rpak_params["shaderset"]
     files_sub_preset_json["selfillumtint"] = normalized_selfillum
     files_sub_preset_json["textures"] = normalized_slots
