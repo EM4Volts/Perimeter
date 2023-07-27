@@ -19,17 +19,13 @@ import json, os, sys, shutil, subprocess, bpy
 def convert_textures( texconv_path, asset_path ):
      for filename in os.scandir(asset_path):
         if filename.name.endswith("nml.png"):
-            tex_conv_args_str = f'"{texconv_path}" -f BC5_UNORM -srgb -ft dds " + ""{filename.path}"" + " -o " + ""{asset_path}""'
             tex_conv_args_list = [texconv_path, "-f", "BC5_UNORM", "-srgb", "-ft", "dds", filename.path, "-o", asset_path]
         else:
             if filename.name.endswith("gls.png"):
-                tex_conv_str = f'"{texconv_path}" -f BC4_UNORM -srgbi -ft dds " + ""{filename.path}"" + " -o " + ""{asset_path}""'
                 tex_conv_args_list = [texconv_path, "-f", "BC4_UNORM", "-srgbi", "-ft", "dds", filename.path, "-o", asset_path]
             else:
-                tex_conv_str = f'""{texconv_path}"" -f BC1_UNORM_SRGB -srgbi -ft dds " + ""{filename.path}"" + " -o " + ""{asset_path}""'
                 tex_conv_args_list = [texconv_path, "-f", "BC1_UNORM_SRGB", "-srgbi", "-ft", "dds", filename.path, "-o", asset_path]
 
-        print( tex_conv_str)
         subprocess.call( tex_conv_args_list , shell=True )
 
 
@@ -37,32 +33,12 @@ def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_s
 
     addon_prefs = bpy.context.preferences.addons[__package__].preferences
 
-    #rpak_params = { "rpak_surface_type": rpak_surface_type ,"rpak_subtype": rpak_subtype, "rpak_type": rpak_type, "rpak_asset_path": rpak_asset_path, "rpak_name": rpak_material_name, "preset": rpak_preset, "shaderset": rpak_shaderset, "faceflags": rpak_faceflags, "visibilityflags": rpak_visibilityflags, "flag_1": rpak_flag_1, "flag_2": rpak_flag_2, "selfillum": rpak_selfillum }
-
-    """
-    rpak_params = { "rpak_export_path": context.scene.perimeter_rpak_export_path,
-                   "rpak_surface_type": rpak_surface_type ,
-                   "rpak_subtype": rpak_subtype,
-                   "rpak_type": rpak_type,
-                   "rpak_asset_path": rpak_asset_path,
-                   "rpak_name": rpak_material_name,
-                   "preset": rpak_preset,
-                   "shaderset": rpak_shaderset,
-                   "faceflags": rpak_faceflags,
-                   "visibilityflags": rpak_visibilityflags,
-                   "flag_1": rpak_flag_1,
-                   "flag_2": rpak_flag_2,
-                   "selfillum": rpak_selfillum }
-    """
     preset_json ={
 
         "name": "",
         "assetsDir": "../perimeter_assets",
         "outputDir": "../perimeter_rpaks",
         "starpakPath":"",
-        "version": 7,
-        "visibilityflags": "opaque",
-        "faceflags": 6,
         "files":[
 
         ]
