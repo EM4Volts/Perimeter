@@ -800,7 +800,7 @@ def make_testmod( self, context ):
         os.makedirs( mod_folder )
         #make mod.json
         mod_json = os.path.join( mod_folder, "mod.json" )
-        mod_json_dict = {"Name": "Perimeter Test Mod", "description": "This is a test mod made by Perimeter", "version": "1.0.0", "LoadPriority": 3}
+        mod_json_dict = {"Name": context.scene.compiled_mod_name, "description": "This is a test mod made by Perimeter", "Version": "1.0.0", "LoadPriority": 3}
         with open( mod_json, 'w' ) as f:
             json.dump( mod_json_dict, f, indent=4 )
         #make models folder in mod folder
