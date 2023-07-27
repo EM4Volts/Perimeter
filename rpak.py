@@ -39,8 +39,8 @@ def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_s
         "assetsDir": "../perimeter_assets",
         "outputDir": "../perimeter_rpaks",
         "starpakPath":"",
+        "version": 7,
         "files":[
-
         ]
     }
 
@@ -111,7 +111,7 @@ def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_s
         files_sub_preset_json["flags"] = rpak_params["flag_1"]
     if not rpak_params["flag_2"] == "":
         files_sub_preset_json["flags2"] = rpak_params["flag_2"]
-    if not rpak_params["shaderset"] == "":
+    if not rpak_params["shaderset"] == "Default" or rpak_params["shaderset"] == "":
         files_sub_preset_json["shaderset"] = rpak_params["shaderset"]
     files_sub_preset_json["selfillumtint"] = normalized_selfillum
     files_sub_preset_json["textures"] = normalized_slots

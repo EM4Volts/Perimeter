@@ -644,6 +644,10 @@ class NSAllInOneTestOperator( Operator ):
 
                 context.scene.perimeter_rpak_export_path = temp_rpak_export_path
 
+                #if paks folder does not exist, create it
+                if not os.path.exists( os.path.join( mod_path, "paks" ) ):
+                    os.mkdir( os.path.join( mod_path, "paks" ) )
+
                 rpak_json_dict = {"Postload": {}}
                 for file in os.listdir( os.path.join( mod_path, "paks" ) ):
                     if file.endswith( "pak" ):
@@ -812,6 +816,8 @@ def make_testmod( self, context ):
         #make the model folder in the mod folder
         os.makedirs( os.path.join( mod_folder + "/mod/" + model_folder ), exist_ok=True )
         perimeterPrint( model_name )
+
+        
 
         #copy the model to the mod folder and then remove the _conv
         folder_from = os.path.dirname( context.scene.mdlshit_mdl ) + "/" + os.path.basename( context.scene.mdlshit_mdl[:-4] + "_conv.mdl" )
