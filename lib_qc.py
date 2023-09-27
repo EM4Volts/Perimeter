@@ -87,8 +87,7 @@ def save_material_override( qc_file_path, material_override ):
         with open( qc_file_path, "r" ) as qc_file:
             qc_file_lines = qc_file.readlines(  )
             for line in qc_file_lines:
-                print( line)
-                if line.startswith("$renamematerial"):
+                if line.lower().startswith("$renamematerial"):
                     lines_to_remove.append( line )
             
             for line in lines_to_remove:
@@ -105,20 +104,22 @@ def remove_cdmaterials( qc_file_path ):
     if not qc_file_path.lower().endswith( ".qc" ):
         return ""
     else:
+
+        lines_to_remove = []
+        #hacky solution incoming
+
         with open( qc_file_path, "r" ) as qc_file:
             qc_file_lines = qc_file.readlines(  )
-
             for line in qc_file_lines:
-                if line.lower().startswith( "$cdmaterials".lower( ) ):
-                    #remove line and store the position of the line
-                    cdmaterials_line = qc_file_lines.index( line )
-                    qc_file_lines.remove( line )
+                if line.lower().startswith("$cdmaterials"):
+                    lines_to_remove.append( line )
 
-            #write an empty cdmaterials line at the position of the old cdmaterials line
-            qc_file_lines.insert( cdmaterials_line, f'$cdmaterials ""\n' )
-
-            qc_file.close(  )
+            for line in lines_to_remove:
+                qc_file_lines.remove( line )
+                qc_file.close(  )
 
         with open( qc_file_path, "w" ) as qc_file:
+            qc_file.writelines( "$cdmaterials\n")
             qc_file.writelines( qc_file_lines )
             qc_file.close(  )
+

@@ -17,7 +17,7 @@
 bl_info = {
     "name": "Perimeter",
     "author": "EM4V",
-    "version": ( 1, 31 ),
+    "version": ( 1, 4 ),
     "blender": ( 2, 80, 0),
     "location": "Sidebar > Perimeter",
     "description": "Addon for managing Northstar settings",
@@ -26,7 +26,10 @@ bl_info = {
     "tracker_url": "https://github.com/EM4Volts/Perimeter/issues"
 }
 
+
+
 import bpy
+from . import addon_updater_ops
 from bpy.props import StringProperty, CollectionProperty, BoolProperty
 from bpy.types import Operator, Panel, AddonPreferences, UIList
 import os, ast, json, subprocess, shutil
@@ -1000,10 +1003,44 @@ class NSPreferencesStudiomdlSetup( Operator ):
         row.label( text="Source Film Maker")
         row.operator("northstar.game_folder", icon="FILE_FOLDER")
 
+
+
 # Addon Preferenc
 class NSAddonPreferences( AddonPreferences ):
     bl_idname = __name__
 
+    auto_check_update : bpy.props.BoolProperty(
+		name="Auto-check for Update",
+		description="If enabled, auto-check for updates using an interval",
+		default=False)
+
+    updater_interval_months : bpy.props.IntProperty(
+		name='Months',
+		description="Number of months between checking for updates",
+		default=0,
+		min=0)
+
+    updater_interval_days : bpy.props.IntProperty(
+		name='Days',
+		description="Number of days between checking for updates",
+		default=7,
+		min=0,
+		max=31)
+
+    updater_interval_hours :bpy.props.IntProperty(
+		name='Hours',
+		description="Number of hours between checking for updates",
+		default=0,
+		min=0,
+		max=23)
+
+    updater_interval_minutes : bpy.props.IntProperty(
+		name='Minutes',
+		description="Number of minutes between checking for updates",
+		default=0,
+		min=0,
+		max=59)
+    
     ns_launch_exe: StringProperty(
         name="Titanfall 2 Folder",
         default="No Folder Selected!",
@@ -1038,7 +1075,7 @@ class NSAddonPreferences( AddonPreferences ):
             ('sfm', 'Source Film Maker', '', '', 1),
             ('alienswarm', 'Alien Swarm', '', '', 2),
         ],
-    default='portal2',
+    default='sfm',
     )
     game_path: bpy.props.StringProperty(
         name="Game Path (Automatically set if SETUP used)",
@@ -1086,6 +1123,7 @@ class NSAddonPreferences( AddonPreferences ):
 
     selected_materials: bpy.props.CollectionProperty( type=bpy.types.PropertyGroup )
     def draw( self, context ):
+        addon_updater_ops.check_for_update_background()
         layout = self.layout
         layout.label( text="Perimeter Settings")
         layout.prop( self, "ns_launch_exe" )
@@ -1104,7 +1142,6 @@ class NSAddonPreferences( AddonPreferences ):
         row.prop( self, "repak_path" )
         row.prop( self, "texconv_path" )
         row.label( text="" )
-        row.label( text="" )
         #check if io_scene_valvesource is installed, if not, display error
         if "io_scene_valvesource" in bpy.context.preferences.addons:
             row.label( text="Blender Source Tools is installed!", icon="CHECKMARK" )
@@ -1113,8 +1150,8 @@ class NSAddonPreferences( AddonPreferences ):
         row = layout.row()
         row.label( text="For help see the wiki", icon="URL" )
         row.operator( "wm.url_open", text="Github/Wiki", icon="URL" ).url = bl_info["wiki_url"]
-
-
+        addon_updater_ops.update_settings_ui(self,context)
+        addon_updater_ops.update_notice_box_ui(self, context)
 
 
 
@@ -1166,6 +1203,7 @@ classes = ( # classes for the register and unregister functions
 preview_collections = {}
 
 def register():
+    addon_updater_ops.register(bl_info)
     for cls in classes:
         bpy.utils.register_class( cls )
 
