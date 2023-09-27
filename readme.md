@@ -11,6 +11,8 @@ code is a mess rn, will sort it out sometimes in the future.
 
 
 In Blender install Blender Source Tools addon, if you dont have it this wont work https://developer.valvesoftware.com/wiki/Blender_Source_Tools
+
+
 Download the addon as a zip using the cool green button up there.
 
 Install the addon in blender, enable it, and in its settings select your titanfall 2 folder, press the "setup studiomdl" button and select either your source film maker, portal 2(with sdk)or alien swarm (with sdk) install folders.
