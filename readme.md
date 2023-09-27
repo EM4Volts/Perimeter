@@ -26,10 +26,7 @@ most of the new rpak panel should be selfexplainatory
 
 its intended to be used for the final export part, as its way of handling some things are specific, for help consult the images below or contact me on discord ```4v_```
 
-These images
-
-
-![perimeter_panel](https://github.com/EM4Volts/Perimeter/blob/main/docs/perimeter_panel.jpg?raw=true)
+will add proper guide for all stuff in the future
 
 
 ## Issues / Bugs
