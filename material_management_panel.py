@@ -15,7 +15,7 @@
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-import bpy
+import bpy, time
 from bpy.props import StringProperty, CollectionProperty, BoolProperty
 from bpy.types import Operator, Panel, AddonPreferences, UIList, Menu
 
@@ -411,6 +411,8 @@ class PeriimeterMaterialManagementAddEmptyShader( Operator ):
 
         selected_item.rpak_shader_is_set = True
         selected_item.export_rpak = True
+        selected_item.blender_material.name = selected_item.blender_material.name.replace('\\', '/')
+
 
         return {'FINISHED'}
 
@@ -638,17 +640,25 @@ def perimeter_make_rpak( context, material_collection ):
 
     rpak_map = perimeter_make_rpak_map( rpak_params, slots, slot_map_names, mat_name )
 
+    conv_folder = os.path.dirname(repak_path) + "/perimeter_assets/" + rpak_asset_path
 
-    if not os.path.exists( repak_path + "/perimeter_assets/" + rpak_asset_path ):
+    if not os.path.exists( conv_folder ):
         os.makedirs( os.path.dirname(repak_path) + "/perimeter_assets/" + rpak_asset_path, exist_ok=True)
         #copy over all the textures to the repak_path/assets/<material_path> folder and rename them to the slot names specified in slot_map_names
         for slot in slots:
             if slot != "None":
                 slot_name = slot_map_names[slots.index(slot)]
+            
                 #copy the texture to the repak_path/assets/<material_path> folder
-                shutil.copy( slot, os.path.dirname(repak_path) + "/perimeter_assets/" + rpak_asset_path + mat_name + slot_name )
+                source_folder = slot
+                destination_folder = fr'{os.path.dirname(repak_path)}/perimeter_assets/{rpak_asset_path}{mat_name}{slot_name}'
 
+                shutil.copy( source_folder, destination_folder)
+                time.sleep(0.1) #sleep to avoid strange corruption issues
 
+                #shutil.copy( f'{slot}', f'{os.path.dirname(repak_path)}/perimeter_assets/{rpak_asset_path}/{mat_name}{slot_name}')
+
+                
     #use convert_textures to convert all textures in the repak_path/assets/<material_path> folder
     convert_textures( addon_prefs.texconv_path, os.path.dirname(repak_path) + "/perimeter_assets/" + rpak_asset_path )
 
@@ -658,13 +668,13 @@ def perimeter_make_rpak( context, material_collection ):
 
     cmd = f'"{repak_path}" "{map_absolute_path}"'
 
-    print(cmd)
     call( cmd, shell=True )
 
     #cleanup, delete map file and the repak_path/assets/<material_path> folder
 
-    #shutil.rmtree( os.path.dirname(repak_path) + "/perimeter_assets/" + rpak_asset_path )
+    shutil.rmtree( os.path.dirname(repak_path) + "/perimeter_assets/" )
     os.remove( map_absolute_path )
+
 
 
 def perimeter_return_materialoverrides( context ):
