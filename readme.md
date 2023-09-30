@@ -6,7 +6,7 @@
 code is a mess rn, will sort it out sometimes in the future.
 
 
-
+DO NOT DOWNLOAD THE RELEASE ZIPS, DOWNLOAD THE SOURCE FROM ABOVE
 ## Setup
 
 
