@@ -1358,7 +1358,7 @@ def register(bl_info):
     updater.subfolder_path = ""
 
     # Used to check/compare versions.
-    updater.current_version = ( 1, 50 )
+    updater.current_version = ( 1, 60 )
 
     # Optional, to hard-set update frequency, use this here - however, this
     # demo has this set via UI properties.
