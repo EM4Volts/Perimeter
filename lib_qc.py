@@ -119,7 +119,7 @@ def remove_cdmaterials( qc_file_path ):
                 qc_file.close(  )
 
         with open( qc_file_path, "w" ) as qc_file:
-            qc_file.writelines( "$cdmaterials\n")
+            qc_file.writelines( '$cdmaterials ""\n')
             qc_file.writelines( qc_file_lines )
             qc_file.close(  )
 
