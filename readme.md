@@ -3,8 +3,7 @@
 
 
 
-code is a mess rn, will sort it out sometimes in the future.
-
+#BLENDER 4.0 BROKE ALOT OF THE MATERIAL SETUP STUFF, STAY ON 3.6 TO USE PERIMETER
 
 DO NOT DOWNLOAD THE RELEASE ZIPS, DOWNLOAD THE SOURCE FROM ABOVE
 ## Setup
