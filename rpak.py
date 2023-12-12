@@ -126,6 +126,7 @@ def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_s
         files_sub_preset_json["subtype"] = "viewmodel_skn31"
         files_sub_preset_json["shaderset"] = "uberAoCavEmitDetovrDtmUV2000000010Samp222222222_skn"
         files_sub_preset_json["detailtransform"] = [4.0, 0.0, -0.0, 4.0, 0.0, 0.0]
+        files_sub_preset_json["color2"] = [ 1.0, 1.0, 1.0]
 
     else:
         files_sub_preset_json["subtype"] = rpak_params["rpak_subtype"]
