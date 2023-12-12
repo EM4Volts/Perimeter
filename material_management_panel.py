@@ -55,7 +55,8 @@ class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
 
     advanced_rpak_options: bpy.props.BoolProperty( default=False ) #whether or not to show the advanced rpak options
 
-    rpak_preset: bpy.props.EnumProperty( items=[ ("default", "Default", "")
+    rpak_preset: bpy.props.EnumProperty( items=[ ("default", "Default", ""),
+                                                 ("skn31", "Skin31", "")
                                                  ],
                                                 default="default" ) #preset for the rpak
 

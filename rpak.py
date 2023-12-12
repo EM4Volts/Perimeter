@@ -55,6 +55,7 @@ def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_s
             "surface": "default",
             "width": 2048,
             "height": 2048,
+            "materialrefs": [ "code_private/depth_shadow", "code_private/depth_prepass", "code_private/depth_vsm" ],
             "flags": "",
             "flags2": "",
             "shaderset": "",
@@ -105,18 +106,29 @@ def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_s
 
     files_sub_preset_json["path"] = f'{rpak_params["rpak_asset_path"]}/{rpak_params["rpak_name"]}'.replace("//", "/")
     files_sub_preset_json["type"] = rpak_params["rpak_type"]
-    files_sub_preset_json["subtype"] = rpak_params["rpak_subtype"]
+
+
     files_sub_preset_json["surface"] = rpak_params["rpak_surface_type"]
     if not rpak_params["flag_1"] == "":
         files_sub_preset_json["flags"] = rpak_params["flag_1"]
     if not rpak_params["flag_2"] == "":
         files_sub_preset_json["flags2"] = rpak_params["flag_2"]
+
     if not rpak_params["shaderset"] == "Default" or rpak_params["shaderset"] == "":
-        files_sub_preset_json["shaderset"] = rpak_params["shaderset"]
+        
         print( rpak_params["shaderset"])
+
     files_sub_preset_json["selfillumtint"] = normalized_selfillum
     files_sub_preset_json["textures"] = normalized_slots
     files_sub_preset_json["visibilityflags"] = rpak_params["visibilityflags"]
+
+    if rpak_params["preset"] == "skn31":
+        files_sub_preset_json["subtype"] = "viewmodel_skn31"
+        files_sub_preset_json["shaderset"] = "uberAoCavEmitDetovrDtmUV2000000010Samp222222222_skn"
+        files_sub_preset_json["detailtransform"] = [4.0, 0.0, -0.0, 4.0, 0.0, 0.0]
+
+    else:
+        files_sub_preset_json["subtype"] = rpak_params["rpak_subtype"]
 
     rpak_map_json["files"].append( files_sub_preset_json )
     

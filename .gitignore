@@ -8,3 +8,5 @@ test.py
 __pycache__/addon_updater_ops.cpython-310.pyc
 __pycache__/addon_updater.cpython-310.pyc
 perimeter_updater/Perimeter_updater_status.json
+.vs/VSWorkspaceState.json
+.vs/Perimeter/v17/.wsuo

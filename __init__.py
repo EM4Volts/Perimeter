@@ -17,7 +17,7 @@
 bl_info = {
     "name": "Perimeter",
     "author": "EM4V",
-    "version": ( 1, 7 ),
+    "version": ( 1, 8 ),
     "blender": ( 2, 80, 0),
     "location": "Sidebar > Perimeter",
     "description": "Addon for managing Northstar settings",
