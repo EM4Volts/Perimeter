@@ -243,7 +243,7 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                 row.label( text="Blender Name:" )
                 row.label( text=selected_item.blender_material.name )
                 row = box.row()
-                row.prop( selected_item, "export_rpak", text="Export in RPAK" )
+                #row.prop( selected_item, "export_rpak", text="Export in RPAK" )
                 
                 if not selected_item.rpak_shader_is_set:
                     row.label( text="RPAK Shader Not Set", icon="ERROR" )
