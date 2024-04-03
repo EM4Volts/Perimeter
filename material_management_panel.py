@@ -23,6 +23,7 @@ from subprocess import call
 
 from .shader import *
 from .rpak import *
+from .lib_pma import *
 
 
 #        _      _____  _____ _______ _____       __  __  __ _____  _____  _____
@@ -34,7 +35,7 @@ from .rpak import *
 
 
 
-shader_list = ['Default', 'uberAddSamp2222_skn', 'uberAoCavDetovrDtmUV200000010Samp22222222_skn', 'uberAoCavDtnDtmUV200000010Samp22222222_skn', 'uberAoCavEmitDetovrDtmEntcolmeUV2000000010Samp222222222_skn', 'uberAoCavEmitDetovrDtmUV2000000010Samp222222222_skn', 'uberAoCavEmitEntcolmeSamp2222222_skn', 'uberAoCavEmitOpamCutSamp22222222_skn', 'uberAoCavEmitOpamDetovrDtmCutUV20000000010Samp2222222222_skn', 'uberAoCavEmitOpamTransEPMATSamp22222222_skn', 'uberAoCavEmitOpamTransSamp22222222_skn', 'uberAoCavEmitSamp2222222_skn', 'uberAoCavOpamCutSamp2222222_skn', 'uberAoCavOpamTransSamp2222222_skn', 'uberAoCavOpamTransTsaadatSamp2222222_skn', 'uberAoCavSamp222222_skn', 'uberAoDetDtnUV20000011Samp2222222_skn', 'uberAoDetovrDtmUV20000010Samp2222222_skn', 'uberAoEmitDetovrDtmEntcolmeUV200000010Samp22222222_skn', 'uberAoEmitDetovrDtmUV200000010Samp22222222_skn', 'uberAoEmitEntcolmeEntcolmdSamp222222_skn', 'uberAoEmitEntcolmeSamp222222_skn', 'uberAoEmitSamp222222_skn', 'uberAoOpamTransSamp222222_skn', 'uberAoSamp22222_skn', 'uberCavOpamTransSamp222222_skn', 'uberCavSamp22222_skn', 'uberCockpit3Samp2222_skn', 'uberCutSamp2222_skn', 'uberDepthUiVcolaCut', 'uberDepthVsmCut', 'uberDepthVsmOpamCut', 'uberDepthVsmOpamovrCut', 'uberDepthVsmUiVcolaCut', 'uberDepthVsmUvs_skn', 'uberDepthVsmVcolUvs_skn', 'uberDepthVsmVcolaCut', 'uberDepthVsm_fix', 'uberDepthVsm_skn', 'uberEmitDetovrDtmEntcolmeUV20000010Samp2222222_skn', 'uberEmitDtnUV2000001Samp222222_skn', 'uberEmitEmulEefUv1sUv1atUV2000001Samp222222_skn', 'uberEmitEmulUv1atUV2000001Samp222222_skn', 'uberEmitEntcolmeSamp22222_skn', 'uberEmitOpamTransSamp222222_skn', 'uberEmitSamp22222_skn', 'uberEmitTransSamp22222_skn', 'uberInstDecal_wld', 'uberInstDepthUvs_skn', 'uberInstDepthVcolUvs_skn', 'uberInstDepth_gen', 'uberInstDepth_skn', 'uberInstEef_skn', 'uberInstUnlitAef_skn', 'uberInstUnlitUiVcolNofog_skn', 'uberInstUnlitVcolAdfAefNoTsaa_skn', 'uberInstUnlitVcolAdfEef_skn', 'uberInstUnlitVcolAefEef_skn', 'uberInstUnlitVcolAef_skn', 'uberInstUnlitVcolNofog_gen', 'uberInstUnlitVcol_gen', 'uberInstUnlitVcol_skn', 'uberInstUnlitVcol_wld', 'uberInstUnlit_skn', 'uberInstVcolAef_skn', 'uberInstVcolDecal_skn', 'uberInstVcolDecal_wld', 'uberInstVcol_skn', 'uberInst_skn', 'uberLyrDetallOpamDetDtnTransUV4010002200000Samp222222222222_skn', 'uberOpamAddSamp22222_skn', 'uberOpamCutSamp22222_skn', 'uberOpamTransSamp22222_skn', 'uberOpamTransUV210111Samp22222_skn', 'uberSamp2222_skn', 'uberTransSamp2222_skn', 'uberTransSamp2222_wld', 'uberUV20100Samp2222_skn', 'uberUnlitAoCavEmitDetAefAddUv1sUv1atUv2sUv2atUV300001002Samp22222222', 'uberUnlitAvgfrmcolmdSamp2222', 'uberUnlitEef_skn', 'uberUnlitEmitSamp22', 'uberUnlitTransSamp2', 'uberUnlitUiNofogSamp2', 'uberUnlitUiTransNofogSamp2', 'uberUnlitUiVcolNofog_gen', 'uberUnlitUiVcolaAddNofogSamp2', 'uberUnlitUiVcolaTransNofogEPMATSamp2', 'uberUnlitUiVcolaTransNofogSamp2222', 'uberUnlitUiVcoltVcolaAddNofogEPMATSamp2', 'uberUnlitUiVcoltVcolaAddNofogSamp2', 'uberUnlitUiVcoltVcolaCutNofogSamp2', 'uberUnlitUiVcoltVcolaDetTransNofogEPMATUv1atUv2atUV312Samp22', 'uberUnlitVcol_skn', 'uberUnlitVcoltUv1atUV21000Samp2222', 'uberUnlitVcoltVcolaAdfAefAddNoCocNoTsaaSamp2', 'uberUnlitVcoltVcolaEmitEmulEntcolmeEntcolmdAdfEefAddUvd1Uvd2Uv1sUv1dUv1atUv2dUv2atUV401203Samp22222', 'uberUnlitVcoltVcolaEmitEmulEntcolmeEntcolmdTransUvd2Uv1sUv1dUv1atUv2sUv2dUv2atUV31210Samp2222', 'uberUnlitVcoltVcolaEmitEmulOpamEntcolmeEntcolmdAefAddUvd1Uvd2Uv1dUv1atUv2dUv2atUV3111121Samp222222', 'uberUnlitVcoltVcolaEmitEntcolmeEntcolmdAdfEefAddUvd1Uvd2Uv1sUv1dUv1atUV30102Samp2222', 'uberUnlitVcoltVcolaEntcolmdAddSamp2', 'uberUnlitVcoltVcolaEntcolmdTransDofaifSamp2', 'uberUnlit_skn', 'uberVcolaAoOpamTransSamp222222_skn', 'uberVcolaAoOpamTransSamp222222_wld', 'uberVcolaOpamTransSamp22222_skn', 'uberVcolaOpamTransSamp22222_wld', 'uberVcolaTransSamp2222_skn', 'uberVcolaTransSamp2222_wld', 'uberVcolaoAoCavDetovrDtmUV200000010Samp22222222_skn', 'uberVcolaoAoCavEmitEntcolmeSamp2222222_skn', 'uberVcolaoAoCavSamp222222_skn', 'uberVcolaoEmitSamp22222_skn', 'uberVcolaoSamp2222_skn', 'uberVcolaoVcolaAoEntcolmdAefTransSamp22222_skn', 'uberVcoltAoCavDetovrDtmUV200000010Samp22222222_skn', 'uberVcoltAoCavSamp222222_skn', 'uberVcoltAoOpamTransSamp222222_skn', 'uberVcoltAoSamp22222_skn', 'uberVcoltCavSamp22222_skn', 'uberVcoltEmitEntcolmeSamp22222_skn', 'uberVcoltEmitSamp22222_skn', 'uberVcoltOpamCutSamp22222_skn', 'uberVcoltSamp2222_skn', 'uberVcoltVcolaCutSamp2222_skn', 'uberVcoltVcolaEmitAddSamp22222_skn']
+surface_prop_list = ['alienflesh', 'arc_grenade', 'boulder', 'cardboard', 'carpet', 'cloth', 'concrete', 'concrete_block', 'default', 'dirt', 'flesh', 'flyerflesh', 'foliage', 'glass', 'glass_breakable', 'glassbottle', 'grass', 'gravel', 'grenade', 'grenade_triple_threat', 'ice', 'metal', 'metal_barrel', 'metal_bouncy', 'metal_box', 'metal_spectre', 'metal_titan', 'metalgrate', 'metalpanel', 'metalvehicle', 'metalvent', 'paper', 'papercup', 'plaster', 'plastic', 'plastic_barrel', 'plastic_barrel_buoyant', 'plastic_box', 'pottery', 'rock', 'rubber', 'rubbertire', 'sand', 'shellcasing_large', 'shellcasing_small', 'solidmetal', 'stone', 'tile', 'upholstery', 'water', 'weapon', 'wood', 'wood_box', 'wood_furniture', 'wood_plank', 'wood_solid', 'xo_shield']
 
 #MAIN COLLECTION FOR MATERIAL MANAGEMENT
 class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
@@ -55,36 +56,62 @@ class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
 
     advanced_rpak_options: bpy.props.BoolProperty( default=False ) #whether or not to show the advanced rpak options
 
-    rpak_preset: bpy.props.EnumProperty( items=[ ("default", "Default", ""),
-                                                 ("skn31", "Skin31", "")
-                                                 ],
-                                                default="default" ) #preset for the rpak
+    rpak_cpu_toggle: bpy.props.BoolProperty( default=False )
 
-    rpak_shaderset: bpy.props.EnumProperty( items=[ (shader, shader, "") for shader in shader_list ],
-                                                default="Default" ) #shaderset for the rpak
+    rpak_unkFlags: bpy.props.IntProperty( default=4 )
+    rpak_depthStencilFlags: bpy.props.IntProperty( default=23 )
+    rpak_rasterizerFlags: bpy.props.IntProperty( default=6 )
 
-    rpak_enable_manual_shaderset: bpy.props.BoolProperty( default=False ) #whether or not to use a manual shaderset for the rpak
+    c_fogColorFactor: bpy.props.FloatProperty( default=1.0000, name="c_fogColorFactor", min= 0.0, max = 100.0 )
+    c_layerBlendRamp: bpy.props.FloatProperty( default=0.000000, name="c_layerBlendRamp", min= 0.0, max = 100.0 )
+    c_opacity: bpy.props.FloatProperty( default=1.0000, name="c_opacity", min= 0.0, max = 100.0 )
+    c_useAlphaModulateSpecular: bpy.props.FloatProperty( default=0.0000, name="c_useAlphaModulateSpecular", min= 0.0, max = 100.0 )
+    c_alphaEdgeFadeExponent: bpy.props.FloatProperty( default=0.0000, name="c_alphaEdgeFadeExponent", min= 0.0, max = 100.0 )
+    c_alphaEdgeFadeOuter: bpy.props.FloatProperty( default=0.0000, name="c_alphaEdgeFadeOuter", min= 0.0, max = 100.0 )
+    c_alphaEdgeFadeInner: bpy.props.FloatProperty( default=0.0000, name="c_alphaEdgeFadeInner", min= 0.0, max = 100.0 )
+    c_useAlphaModulateEmissive: bpy.props.FloatProperty( default=1.0000, name="c_useAlphaModulateEmissive", min= 0.0, max = 100.0 )
+    c_emissiveEdgeFadeExponent: bpy.props.FloatProperty( default=0.0000, name="c_emissiveEdgeFadeExponent", min= 0.0, max = 100.0 )
+    c_emissiveEdgeFadeInner: bpy.props.FloatProperty( default=1.0000, name="c_emissiveEdgeFadeInner", min= 0.0, max = 100.0 )
+    c_emissiveEdgeFadeOuter: bpy.props.FloatProperty( default=1.0000, name="c_emissiveEdgeFadeOuter", min= 0.0, max = 100.0 )
+    c_alphaDistanceFadeScale: bpy.props.FloatProperty( default=10000.0000, name="c_alphaDistanceFadeScale", min= 0.0, max = 100000.0 )
+    c_alphaDistanceFadeBias: bpy.props.FloatProperty( default=0.0000, name="c_alphaDistanceFadeBias", min= 0.0, max = 100.0 )
+    c_alphaTestReference: bpy.props.FloatProperty( default=0.0000, name="c_alphaTestReference", min= 0.0, max = 100.0 )
+    c_aspectRatioMulV: bpy.props.FloatProperty( default=1.7780, name="c_aspectRatioMulV", min= 0.0, max = 100.0 )
+    c_shadowBias: bpy.props.FloatProperty( default=0.0000, name="c_shadowBias", min= 0.0, max = 100.0 )
+    c_tsaaDepthAlphaThreshold: bpy.props.FloatProperty( default=0.0000, name="c_tsaaDepthAlphaThreshold", min= 0.0, max = 100.0 )
+    c_tsaaMotionAlphaThreshold: bpy.props.FloatProperty( default=0.9000, name="c_tsaaMotionAlphaThreshold", min= 0.0, max = 100.0 )
+    c_tsaaMotionAlphaRamp: bpy.props.FloatProperty( default=10.0000, name="c_tsaaMotionAlphaRamp", min= 0.0, max = 100.0 ) = 10.000000;
+    c_dofOpacityLuminanceScale: bpy.props.FloatProperty( default=1.0000, name="c_dofOpacityLuminanceScale", min= 0.0, max = 100.0 )
 
-    rpak_manual_shaderset: bpy.props.StringProperty( default="" ) #manual shaderset for the rpak
+	#Vector3 pad_CBufUberStatic = { -nan, -nan, -nan }; add in byte later on, not visible
+
+    c_perfGloss: bpy.props.FloatProperty( default=1.0000, name="c_perfGloss", min= 0.0, max = 100.0 )
+    c_perfSpecColor: bpy.props.FloatVectorProperty( default=(0.030000, 0.030000, 0.030000), name="c_perfSpecColor", subtype="COLOR", min= 0.0, max = 100.0 ) #selfillum for the material
+
+
+
+
+    rpak_preset: bpy.props.StringProperty( default="") #preset for the rpak https://github.com/EM4Volts/RePak/blob/2098bbf9f446c0bc62a8eee438b6998560b0885e/src/assets/material.cpp#L301
+
+    rpak_enable_blendstates: bpy.props.BoolProperty( default=False ) #whether or not to use a manual shaderset for the rpak
+
+    rpak_manual_shaderset: bpy.props.StringProperty( default="0xBD04CCCC982F8C15" ) #manual shaderset for the rpak
 
     rpak_faceflags: bpy.props.IntProperty( default=6 ) #face flags for the material
-
-    rpak_visibilityflags: bpy.props.EnumProperty( items=[
-                                                        ("opaque", "Opaque", ""),
-                                                        ("transparent", "Transparent", "")
-                                                        ],
-                                                        default="opaque" ) #visibility flags for the material
-
-    rpak_surfacetype: bpy.props.StringProperty( default="default" ) #surface type for the material
+    
+    rpak_surfacetype: bpy.props.EnumProperty( items=[ (sprop, sprop, "") for sprop in surface_prop_list ],
+                                                default="default" )
     rpak_subtype: bpy.props.StringProperty( default="viewmodel" ) #subtype for the material
     rpak_type: bpy.props.StringProperty( default="skn" ) #type for the material
 
-    rpak_flag_1: bpy.props.StringProperty( default="" ) #flag 1 for the material
-    rpak_flag_2: bpy.props.StringProperty( default="" ) #flag 2 for the material
+    rpak_flag_1: bpy.props.StringProperty( default="1D0300" ) #flag 1 for the material
+    rpak_flag_2: bpy.props.StringProperty( default="56000020" ) #flag 2 for the material
 
     rpak_selfillum_enabled: bpy.props.BoolProperty( default=False ) #whether or not selfillum is enabled for the material
 
-    rpak_selfillum: bpy.props.FloatVectorProperty( default=(0.0, 0.0, 0.0), name="Selfillum", subtype="COLOR", min= 0.1, max = 100.0 ) #selfillum for the material
+    rpak_selfillum: bpy.props.FloatVectorProperty( default=(0.0, 0.0, 0.0), name="Emissive Tint", subtype="COLOR", min= 0.0, max = 100.0 ) #selfillum for the material
+
+    rpak_albedoTint: bpy.props.FloatVectorProperty( default=(1.000000, 1.000000, 1.000000), name="Albedo Tint", subtype="COLOR", min= 0.001, max = 100.0 ) #selfillum for the material
 
     rpak_slot_1: bpy.props.StringProperty( default="None", subtype='FILE_PATH' )
     rpak_slot_2: bpy.props.StringProperty( default="None", subtype='FILE_PATH' )
@@ -115,6 +142,10 @@ class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
     rpak_slot_27: bpy.props.StringProperty( default="None", subtype='FILE_PATH' )
 
 
+    rpak_blendState0: bpy.props.StringProperty( default="4027809796" )
+    rpak_blendState1: bpy.props.StringProperty( default="4027809796" )
+    rpak_blendState2: bpy.props.StringProperty( default="4027809796" )
+    rpak_blendState3: bpy.props.StringProperty( default="1277957" )
 
     #       _  _ ____ ___ ____ ____ _ ____ _       ____ _  _ ____ ____ ____ _ ___  ____ ____
     #       |\/| |__|  |  |___ |__/ | |__| |       |  | |  | |___ |__/ |__/ | |  \ |___ [__
@@ -123,7 +154,7 @@ class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
 
     material_override_enabled: bpy.props.BoolProperty( default=False ) #whether or not to override the material
 
-    material_override_path: bpy.props.StringProperty( default="" ) #full material path to override the material with
+    material_override_path: bpy.props.StringProperty( default="" ) # type: ignore #full material path to override the material with
 
 
 
@@ -178,20 +209,22 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
 
 
 
-        col = layout.row()
-        split = col.split( factor=0.6 )
-        box = split.column().box()
+        box = layout.column()
+
         row = box.column()
         row.operator( "perimeter.add_material", text="Add Material", icon="ADD" )
-        if len( bpy.context.scene.perimeter_material_main_collection ) > 0 and selected_item != None:
+        if len( bpy.context.scene.perimeter_material_main_collection ) > 0:
             row.operator( "perimeter.remove_material", text="Remove Material", icon="REMOVE" )
             row.operator( "perimeter.empty_rpak_shader", text="Setup Empty RPAK Shader for Material", icon="SHADING_TEXTURE" )
+            row.template_list( "PERIMETER_UL_MaterialManagementList", "", context.scene, "perimeter_material_main_collection", context.scene, "perimeter_material_main_collection_index" )
+
             if len( bpy.context.scene.perimeter_material_main_collection ) > 0:
                 row = box.row()
                 row.label( text="Blender Name:" )
                 row.label( text=selected_item.blender_material.name )
                 row = box.row()
                 row.prop( selected_item, "export_rpak", text="Export in RPAK" )
+                
                 if not selected_item.rpak_shader_is_set:
                     row.label( text="RPAK Shader Not Set", icon="ERROR" )
                     row.enabled = False
@@ -202,79 +235,42 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                     row = box.row()
                     row.prop( context.scene, "perimeter_rpak_export_path", text="RPAK Export Path" )
                     row = box.row()
+                    row.scale_y = 2.0
                     row.operator( "perimeter.material_management_panel_export_rpak", text="Export RPAK", icon="EXPORT" )
                     row = box.row()
                     row.label( text="RPAK Asset Path (path without material):" )
                     row.label( text=selected_item_rpak_path )
-                    row = box.row()
+                    row = box.column()
                     row.prop( context.scene, "perimeter_expand_rpak_slots", text="Show Texture Slots")
 
                     if context.scene.perimeter_expand_rpak_slots:
-                        row.prop( context.scene , "perimeter_expand_rpak_slots_advanced", text="Advanced View" )
-                        row = box.row()
                         row.prop( selected_item, "rpak_slot_1", text="1 (col)" )
-                        if not context.scene.perimeter_expand_rpak_slots_advanced:
-                            row = box.row()
                         row.prop( selected_item, "rpak_slot_2", text="2 (nml)" )
-                        row = box.row()
                         row.prop( selected_item, "rpak_slot_3", text="3 (gls/exp)" )
-                        if not context.scene.perimeter_expand_rpak_slots_advanced:
-                            row = box.row()
                         row.prop( selected_item, "rpak_slot_4", text="4 (spc)" )
-                        row = box.row()
                         row.prop( selected_item, "rpak_slot_5", text="5 (ilm)" )
-                        if not context.scene.perimeter_expand_rpak_slots_advanced:
-                            row = box.row()
                         row.prop( selected_item, "rpak_slot_6", text="6" )
-                        row = box.row()
                         row.prop( selected_item, "rpak_slot_7", text="7" )
-                        if not context.scene.perimeter_expand_rpak_slots_advanced:
-                            row = box.row()
                         row.prop( selected_item, "rpak_slot_8", text="8" )
-                        row = box.row()
                         row.prop( selected_item, "rpak_slot_9", text="9" )
-                        if not context.scene.perimeter_expand_rpak_slots_advanced:
-                            row = box.row()
                         row.prop( selected_item, "rpak_slot_10", text="10" )
-                        row = box.row()
                         row.prop( selected_item, "rpak_slot_11", text="11" )
-                        if not context.scene.perimeter_expand_rpak_slots_advanced:
-                            row = box.row()
                         row.prop( selected_item, "rpak_slot_12", text="12 (ao)" )
-                        row = box.row()
                         row.prop( selected_item, "rpak_slot_13", text="13 (cav/cvt)" )
-                        if not context.scene.perimeter_expand_rpak_slots_advanced:
-                            row = box.row()
                         row.prop( selected_item, "rpak_slot_14", text="14 (opa)" )
-
-                        if context.scene.perimeter_expand_rpak_slots_advanced:
-
-                            row = box.row()
-                            row.prop( selected_item, "rpak_slot_15", text="15 (detail)" )
-
-                            row.prop( selected_item, "rpak_slot_16", text="16 (dm_nml)" )
-                            row = box.row()
-                            row.prop( selected_item, "rpak_slot_17", text="17 (msk)" )
-
-                            row.prop( selected_item, "rpak_slot_18", text="18" )
-                            row = box.row()
-                            row.prop( selected_item, "rpak_slot_19", text="19" )
-
-                            row.prop( selected_item, "rpak_slot_20", text="20" )
-                            row = box.row()
-                            row.prop( selected_item, "rpak_slot_21", text="21" )
-
-                            row.prop( selected_item, "rpak_slot_22", text="22" )
-                            row = box.row()
-                            row.prop( selected_item, "rpak_slot_23", text="23 (bm)" )
-
-                            row.prop( selected_item, "rpak_slot_24", text="24 (col)" )
-                            row = box.row()
-                            row.prop( selected_item, "rpak_slot_25", text="25 (nml)" )
-
-                            row.prop( selected_item, "rpak_slot_26", text="26 (gls/exp)" )
-                            row = box.row()
-                            row.prop( selected_item, "rpak_slot_27", text="27 (spc)" )
+                        row.prop( selected_item, "rpak_slot_15", text="15 (detail)" )
+                        row.prop( selected_item, "rpak_slot_16", text="16 (dm_nml)" )  
+                        row.prop( selected_item, "rpak_slot_17", text="17 (msk)" )
+                        row.prop( selected_item, "rpak_slot_18", text="18" )
+                        row.prop( selected_item, "rpak_slot_19", text="19" )
+                        row.prop( selected_item, "rpak_slot_20", text="20" )
+                        row.prop( selected_item, "rpak_slot_21", text="21" )
+                        row.prop( selected_item, "rpak_slot_22", text="22" )
+                        row.prop( selected_item, "rpak_slot_23", text="23 (bm)" )
+                        row.prop( selected_item, "rpak_slot_24", text="24 (col)" )
+                        row.prop( selected_item, "rpak_slot_25", text="25 (nml)" )
+                        row.prop( selected_item, "rpak_slot_26", text="26 (gls/exp)" )
+                        row.prop( selected_item, "rpak_slot_27", text="27 (spc)" )
 
                         if not context.scene.perimeter_expand_rpak_slots_advanced:
                             row = box.row()
@@ -282,39 +278,70 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
 
 
 
-
+                    #row = box.row()
+                    #row.prop( selected_item, "rpak_preset", text="Preset" ) #disabled in favor of PMAT
+                    
+                    #row = box.row()
+                    #row.prop( selected_item, "rpak_shaderset", text="Shaderset" )
+                    row = box.column()
+                    row.label( text=" " )
+                    row.label( text="Material Settings" )
                     row = box.row()
-                    row.prop( selected_item, "advanced_rpak_options", text="Advanced RPAK Options" )
+                    #row.prop( selected_item, "rpak_enable_manual_shaderset", text="Enable Manual Shaderset" )
+                    row.scale_y = 2.0
+                    row.operator( "perimeter.import_pema", text="Import .pma", icon="IMPORT" )
+                    row.operator( "perimeter.export_pema", text="Export .pma", icon="EXPORT" )
 
-                    if selected_item.advanced_rpak_options:
-                        row = box.row()
-                        row.prop( selected_item, "rpak_preset", text="RPAK Preset" )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_shaderset", text="RPAK Shaderset" )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_enable_manual_shaderset", text="Enable Manual Shaderset" )
-                        if selected_item.rpak_enable_manual_shaderset:
-                            row = box.row()
-                            row.prop( selected_item, "rpak_manual_shaderset", text="RPAK Manual Shaderset" )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_faceflags", text="RPAK Faceflags" )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_visibilityflags", text="RPAK Visibilityflags", expand=True )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_surfacetype", text="RPAK Surfacetype" )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_subtype", text="RPAK Subtype" )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_type", text="RPAK Type" )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_flag_1", text="RPAK Flag 1" )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_flag_2", text="RPAK Flag 2" )
-                        row = box.row()
-                        row.prop( selected_item, "rpak_selfillum_enabled", text="Enable Selfillum" )
-                        row = box.row()
-                        if selected_item.rpak_selfillum_enabled:
-                            row.prop( selected_item, "rpak_selfillum", text="RPAK Selfillum" )
+                    row = box.column()
+                    
+                    row = box.column()   
+                            
+                    #row.prop( selected_item, "rpak_preset", text="Repak Internal Preset" )
+                    row.prop( selected_item, "rpak_surfacetype", text="Surfacetype" )
+                    row.prop( selected_item, "rpak_type", text="Type" )
+                    row.prop( selected_item, "rpak_manual_shaderset", text="Shaderset" )
+                    row.prop( selected_item, "rpak_flag_1", text="Samplers" )
+                    row.prop( selected_item, "rpak_flag_2", text="Flag 2" )
+                    row.prop( selected_item, "rpak_unkFlags", text="unkFlags" )
+                    row.prop( selected_item, "rpak_depthStencilFlags", text="DepthStencil Flags" )
+                    row.prop( selected_item, "rpak_rasterizerFlags", text="Rasterizer Flags" )
+                    row.prop( selected_item, "rpak_enable_blendstates", text="Show Blendstates")
+
+                    if selected_item.rpak_enable_blendstates:
+                        row.prop( selected_item, "rpak_blendState0", text="RenderLighting")
+                        row.prop( selected_item, "rpak_blendState1", text="RenderAliasing")
+                        row.prop( selected_item, "rpak_blendState2", text="RenderDoF")
+                        row.prop( selected_item, "rpak_blendState3", text="RenderUnknown")
+                    row.prop( selected_item, "rpak_albedoTint", text="Albedo Tint" )
+                    row.prop( selected_item, "rpak_selfillum", text="Emissive Tint" )
+                    row.prop( selected_item, "c_perfSpecColor", text="Specular Tint" )
+                    row.prop( selected_item, "rpak_cpu_toggle", text="Shaderproperties")
+                    if selected_item.rpak_cpu_toggle:
+
+                        #row.operator( "perimeter.import_cpu", text="Import from CPU file", icon="IMPORT" )
+                        #no importer, instead relay values and build cpu file on demand
+                        row.prop( selected_item, "c_fogColorFactor", text="c_fogColorFactor" )
+                        row.prop( selected_item, "c_layerBlendRamp", text="c_layerBlendRamp" )
+                        row.prop( selected_item, "c_opacity", text="c_opacity" )
+                        row.prop( selected_item, "c_useAlphaModulateSpecular", text="c_useAlphaModulateSpecular" )
+                        row.prop( selected_item, "c_alphaEdgeFadeExponent", text="c_alphaEdgeFadeExponent" )
+                        row.prop( selected_item, "c_alphaEdgeFadeOuter", text="c_alphaEdgeFadeOuter" )
+                        row.prop( selected_item, "c_alphaEdgeFadeInner", text="c_alphaEdgeFadeInner" )
+                        row.prop( selected_item, "c_useAlphaModulateEmissive", text="c_useAlphaModulateEmissive" )
+                        row.prop( selected_item, "c_emissiveEdgeFadeExponent", text="c_emissiveEdgeFadeExponent" )
+                        row.prop( selected_item, "c_emissiveEdgeFadeInner", text="c_emissiveEdgeFadeInner" )
+                        row.prop( selected_item, "c_emissiveEdgeFadeOuter", text="c_emissiveEdgeFadeOuter" )
+                        row.prop( selected_item, "c_alphaDistanceFadeScale", text="c_alphaDistanceFadeScale" )
+                        row.prop( selected_item, "c_alphaDistanceFadeBias", text="c_alphaDistanceFadeBias" )
+                        row.prop( selected_item, "c_alphaTestReference", text="c_alphaTestReference" )
+                        row.prop( selected_item, "c_aspectRatioMulV", text="c_aspectRatioMulV" )
+                        row.prop( selected_item, "c_shadowBias", text="c_shadowBias" )
+                        row.prop( selected_item, "c_tsaaDepthAlphaThreshold", text="c_tsaaDepthAlphaThreshold" )
+                        row.prop( selected_item, "c_tsaaMotionAlphaThreshold", text="c_tsaaMotionAlphaThreshold" )
+                        row.prop( selected_item, "c_tsaaMotionAlphaRamp", text="c_tsaaMotionAlphaRamp" )
+                        row.prop( selected_item, "c_dofOpacityLuminanceScale", text="c_dofOpacityLuminanceScale" )
+                        row.prop( selected_item, "c_perfGloss", text="c_perfGloss" )
+                            
 
                 row = box.row()
                 row.prop( selected_item, "material_override_enabled", text="Override Material" )
@@ -339,10 +366,6 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                     row = box.row()
                     row.label( text="IMPORTANT enter the full material path.", icon="ERROR" )
 
-        box = split.column().box()
-        row = box.row()
-        row.template_list( "PERIMETER_UL_MaterialManagementList", "", context.scene, "perimeter_material_main_collection", context.scene, "perimeter_material_main_collection_index" )
-
         layout = self.layout
         row = layout.row()
 
@@ -357,7 +380,147 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
 #        \____/|_|    |______|_|  \_\/_/    \_\_|  \____/|_|  \_\_____/
 
 
+class PerimeterMaterialManagementImportPerimeterMaterial(bpy.types.Operator):
 
+    bl_idname = "perimeter.import_pema"
+    bl_label = ""
+    bl_description = "Imports Perimeter Material (.pma)"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    filepath: StringProperty(subtype="FILE_PATH", name="File Path", description="File path for loading the .pma file")
+    filename: StringProperty(name="File Name", description="Name of the .pma file to be loaded")
+
+    def execute(self, context):
+        selected_index = context.scene.perimeter_material_main_collection_index
+        material = context.scene.perimeter_material_main_collection[selected_index]   
+        # Combine the file path and the file name
+        filepath = bpy.path.ensure_ext(self.filepath, ".pma")
+        # Perform load
+
+        loaded_pma = PEMA_FILE
+        loaded_pma.read_pema(loaded_pma, filepath)
+
+
+        material.rpak_unkFlags                = loaded_pma.rpak_unkFlags                          
+        material.rpak_depthStencilFlags       = loaded_pma.rpak_depthStencilFlags                 
+        material.rpak_rasterizerFlags         = loaded_pma.rpak_rasterizerFlags    
+              
+        material.rpak_manual_shaderset        = "0x" + hex(loaded_pma.rpak_manual_shaderset).upper()[2:]      
+        material.rpak_flag_1                  = hex(loaded_pma.rpak_flag_1)[2:].upper()          
+        material.rpak_flag_2                  = hex(loaded_pma.rpak_flag_2)[2:].upper()         
+
+        material.rpak_blendState0             = str(loaded_pma.rpak_blendState0)
+        material.rpak_blendState1             = str(loaded_pma.rpak_blendState1)
+        material.rpak_blendState2             = str(loaded_pma.rpak_blendState2)
+        material.rpak_blendState3             = str(loaded_pma.rpak_blendState3)
+        material.rpak_albedoTint[0]           = loaded_pma.rpak_albedoTint.x      
+        material.rpak_albedoTint[1]           = loaded_pma.rpak_albedoTint.y
+        material.rpak_albedoTint[2]           = loaded_pma.rpak_albedoTint.z  
+
+        material.rpak_selfillum[0]            = loaded_pma.rpak_selfillum.x
+        material.rpak_selfillum[1]            = loaded_pma.rpak_selfillum.y
+        material.rpak_selfillum[2]            = loaded_pma.rpak_selfillum.z
+
+        material.c_perfSpecColor[0]           = loaded_pma.c_perfSpecColor.x
+        material.c_perfSpecColor[1]           = loaded_pma.c_perfSpecColor.y
+        material.c_perfSpecColor[2]           = loaded_pma.c_perfSpecColor.z
+                 
+
+        material.c_fogColorFactor             = loaded_pma.c_fogColorFactor                
+        material.c_layerBlendRamp             = loaded_pma.c_layerBlendRamp                
+        material.c_opacity                    = loaded_pma.c_opacity                   
+        material.c_useAlphaModulateSpecular   = loaded_pma.c_useAlphaModulateSpecular                          
+        material.c_alphaEdgeFadeExponent      = loaded_pma.c_alphaEdgeFadeExponent                         
+        material.c_alphaEdgeFadeOuter         = loaded_pma.c_alphaEdgeFadeOuter                        
+        material.c_alphaEdgeFadeInner         = loaded_pma.c_alphaEdgeFadeInner                        
+        material.c_useAlphaModulateEmissive   = loaded_pma.c_useAlphaModulateEmissive                          
+        material.c_emissiveEdgeFadeExponent   = loaded_pma.c_emissiveEdgeFadeExponent                          
+        material.c_emissiveEdgeFadeInner      = loaded_pma.c_emissiveEdgeFadeInner                         
+        material.c_emissiveEdgeFadeOuter      = loaded_pma.c_emissiveEdgeFadeOuter                         
+        material.c_alphaDistanceFadeScale     = loaded_pma.c_alphaDistanceFadeScale                        
+        material.c_alphaDistanceFadeBias      = loaded_pma.c_alphaDistanceFadeBias                         
+        material.c_alphaTestReference         = loaded_pma.c_alphaTestReference                        
+        material.c_aspectRatioMulV            = loaded_pma.c_aspectRatioMulV                       
+        material.c_shadowBias                 = loaded_pma.c_shadowBias                        
+        material.c_tsaaDepthAlphaThreshold    = loaded_pma.c_tsaaDepthAlphaThreshold                       
+        material.c_tsaaMotionAlphaThreshold   = loaded_pma.c_tsaaMotionAlphaThreshold                          
+        material.c_tsaaMotionAlphaRamp        = loaded_pma.c_tsaaMotionAlphaRamp                       
+        material.c_dofOpacityLuminanceScale   = loaded_pma.c_dofOpacityLuminanceScale                          
+        material.c_perfGloss                  = loaded_pma.c_perfGloss                 
+
+        material.rpak_surfacetype             = loaded_pma.rpak_surfacetype        
+        material.rpak_type                    = loaded_pma.rpak_type 
+        material.rpak_subtype                 = loaded_pma.rpak_subtype 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def draw(self, context):
+        layout = self.layout
+
+
+    def check(self, context):
+        return True
+    
+
+
+
+class PerimeterMaterialManagementExportPerimeterMaterial(bpy.types.Operator):
+    bl_idname = "perimeter.export_pema"
+    bl_label = ""
+    bl_description = "Exports Perimeter Material (.pma)"
+
+    filepath: StringProperty(subtype="FILE_PATH", name="File Path", description="File path for saving the .pma file")
+    filename: StringProperty(name="File Name", description="Name of the .pma file to be saved")
+
+    def execute(self, context):
+        selected_index = context.scene.perimeter_material_main_collection_index
+        material = context.scene.perimeter_material_main_collection[selected_index]   
+        # Combine the file path and the file name
+        filepath = bpy.path.ensure_ext(self.filepath, ".pma")
+        # Perform save operation here
+        self.report({'INFO'}, "File Saved: " + filepath)
+
+        PEMA_FILE.make_material_file_from_blender_material_collection(PEMA_FILE, filepath, material)
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def draw(self, context):
+        layout = self.layout
+        #layout.prop(self, "filepath")
+        #layout.prop(self, "filename")
+
+    def check(self, context):
+        return True
 
 
 class PerimeterMaterialManagementRemoveMaterialOperator( bpy.types.Operator ):
@@ -499,7 +662,7 @@ class PerimeterMaterialManagementPanelExportRPAK( Operator ):
                     self.report( {'ERROR'}, "RPAK Export Path not set, set in Preferences" )
                     return {'CANCELLED'}
                 else:
-                    perimeter_make_rpak( context, selected_item )
+                    perimeter_make_refactor_rpak( context, "single_mat" )
             else:
                 self.report( {'ERROR'}, "Export RPAK is not enabled for this material" )
                 return {'CANCELLED'}
@@ -520,7 +683,7 @@ class PerimeterMaterialManagementPanelExportRPAK( Operator ):
 
 
 
-def perimeter_make_rpak( context, material_collection ):
+def perimeter_make_rpak( context, material_collection ): #legacy repak map function, kept incase legacy support is needed. dont touch
 
     addon_prefs = context.preferences.addons[__package__].preferences
 
@@ -528,7 +691,6 @@ def perimeter_make_rpak( context, material_collection ):
 
     rpak_preset = material_collection.rpak_preset
     rpak_shaderset = material_collection.rpak_shaderset
-    rpak_enable_manual_shaderset = material_collection.rpak_enable_manual_shaderset
     rpak_manual_shaderset = material_collection.rpak_manual_shaderset
     rpak_faceflags = material_collection.rpak_faceflags
     rpak_visibilityflags = material_collection.rpak_visibilityflags
@@ -545,8 +707,7 @@ def perimeter_make_rpak( context, material_collection ):
     rpak_asset_path = "/".join( rpak_asset_path[:-1] ) + "/"
 
 
-    if rpak_enable_manual_shaderset:
-        rpak_shaderset = rpak_manual_shaderset
+
 
     if rpak_selfillum_enabled:
         rpak_selfillum = (rpak_selfillum[0] , rpak_selfillum[1], rpak_selfillum[2])
@@ -554,7 +715,7 @@ def perimeter_make_rpak( context, material_collection ):
         rpak_selfillum = (0.0, 0.0, 0.0)
 
     rpak_material_name = material_collection.blender_material.name.replace("\\", "/").replace("//", "/").split("/")
-    rpak_material_name = rpak_material_name[-1]
+    rpak_material_name = rpak_material_name[-1] 
 
     rpak_params = { "rpak_export_path": context.scene.perimeter_rpak_export_path,
                    "rpak_surface_type": rpak_surface_type ,
@@ -569,6 +730,9 @@ def perimeter_make_rpak( context, material_collection ):
                    "flag_1": rpak_flag_1,
                    "flag_2": rpak_flag_2,
                    "selfillum": rpak_selfillum }
+    
+
+    
 
     slots = (
         material_collection.rpak_slot_1,
@@ -676,6 +840,75 @@ def perimeter_make_rpak( context, material_collection ):
     shutil.rmtree( os.path.dirname(repak_path) + "/perimeter_assets/" )
     os.remove( map_absolute_path )
 
+
+
+def perimeter_make_refactor_rpak( context, mode="all_mats"): #refactor repak map maker
+
+
+    ######################################
+    #                                    #
+    #  SUPPORTS [2] MODES                #
+    #                                    #
+    #  all_mats     | make map for       #
+    #                 all materials      #
+    #                 in scene with      #
+    #                 export enabled     #
+    #                                    #
+    #  single_mat   | make map for       #
+    #                 the currently      #
+    #                 selected material  #
+    #                                    #
+    ######################################
+
+    addon_prefs = context.preferences.addons[__package__].preferences
+    # never change 
+    repak_path = addon_prefs.repak_path
+
+    rpak_export_path = context.scene.perimeter_rpak_export_path
+
+
+
+    if mode == "single_mat":
+        selected_index = context.scene.perimeter_material_main_collection_index
+        material = context.scene.perimeter_material_main_collection[selected_index]        
+
+    materials_to_export = []
+    if mode == "all_mats":
+        for material in bpy.context.scene.perimeter_material_main_collection:
+            if material.export_rpak:
+                materials_to_export.append(material)
+        if not len(materials_to_export) == 0:
+            map_returned= perimeter_make_refactor_map(materials_to_export)
+            map_path = map_returned[0]
+            source_png_list = map_returned[1]
+            destination_png_list = map_returned[2]
+            material_paths_list = map_returned[3]
+            cpu_file_queue = map_returned[4]
+
+            for mat_path in material_paths_list:
+                mat_path = mat_path.replace("\\", "/").replace("//", "/")
+                if not os.path.exists( mat_path ):
+                    os.makedirs( mat_path )
+
+            #make cpu files
+            for queued_cpu_file in cpu_file_queue:
+                make_cpu(queued_cpu_file[0], queued_cpu_file[1])
+
+            if len(source_png_list) == len(destination_png_list):
+                for i in range(len(source_png_list)):
+                    shutil.copy( source_png_list[i], destination_png_list[i] + ".png")
+                    time.sleep(0.1)
+
+            for material_path in material_paths_list:
+                convert_textures( addon_prefs.texconv_path, material_path)
+
+        cmd = f'"{repak_path}" "{map_path}"'
+    
+        call( cmd, shell=True )
+    
+        os.remove(map_path)
+    
+        shutil.rmtree(os.path.dirname(repak_path) + "/perimeter_assets/")
 
 
 def perimeter_return_materialoverrides( context ):

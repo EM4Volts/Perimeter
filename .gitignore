@@ -10,3 +10,8 @@ __pycache__/addon_updater.cpython-310.pyc
 perimeter_updater/Perimeter_updater_status.json
 .vs/VSWorkspaceState.json
 .vs/Perimeter/v17/.wsuo
+__pycache__/ioUtils.cpython-310.pyc
+__pycache__/mdl_structs.cpython-310.pyc
+__pycache__/qc_management_panel.cpython-310.pyc
+__pycache__/qcparse.cpython-310.pyc
+current_progress.txt

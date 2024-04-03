@@ -17,7 +17,7 @@
 bl_info = {
     "name": "Perimeter",
     "author": "EM4V",
-    "version": ( 1, 9 ),
+    "version": ( 2, 11 ),
     "blender": ( 2, 80, 0),
     "location": "Sidebar > Perimeter",
     "description": "Addon for managing Northstar settings",
@@ -32,7 +32,7 @@ import bpy
 from . import addon_updater_ops
 from bpy.props import StringProperty, CollectionProperty, BoolProperty
 from bpy.types import Operator, Panel, AddonPreferences, UIList
-import os, ast, json, subprocess, shutil
+import os, ast, json, subprocess, shutil, math, mathutils
 from subprocess import Popen, CREATE_NEW_PROCESS_GROUP, DETACHED_PROCESS, run, call
 from io_scene_valvesource.export_smd import SmdExporter
 from io_scene_valvesource.GUI import SMD_MT_ExportChoice
@@ -41,6 +41,10 @@ from .animationporting import *
 from .lib_qc import *
 from .rpak import *
 from .material_management_panel import *
+from .qcparse import *
+from .qc_management_panel import *
+from .animation_management_panel import *
+
 
 
 bpy.types.WindowManager.map_file_location = bpy.props.StringProperty( name="Map File Location", subtype='FILE_PATH' )
@@ -348,6 +352,8 @@ class QCFileSelectorOperator( bpy.types.Operator ):
         addon_props.qc_file_path = self.filepath
         return {'FINISHED'}
 
+\
+"""
 # Panel for the Perimeter tab
 class NSManagerPanel( Panel ):
     bl_idname = "SIDEBAR_PT_ns_manager"
@@ -412,7 +418,7 @@ class NSManagerPanel( Panel ):
             row = layout.row()
             layout.label( text="Perimeter Panel Disabled, enable in settings!", icon="CANCEL" )
 
-
+"""
 
 def refresh_rpak_export_list( self, context):
 
@@ -484,14 +490,57 @@ class NSMDLUtilsPanel( Panel ):
 
 
 
-global bg_dict
-bg_dict = {}
 
 
-class NSQCParserOperator( Operator ):
-    bl_idname = "northstar.qc_parser"
-    bl_label = "QC Parser"
-    bl_description = "Parse QC File"
+def create_attachment(attachment_list):
+    # Get the active armature
+    armature = bpy.context.active_object
+    bpy.ops.object.mode_set(mode='OBJECT')  # Switch to Object mode
+    
+    # Loop through the input list
+    for attachment_data in attachment_list:
+        attachment_name, parent_bone, offset_x, offset_y, offset_z, rot_x, rot_y, rot_z = attachment_data
+        
+        # Create cone mesh
+        bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=3.1, radius2=0, depth=7.3, location=(0, 0, 0))
+        attachment = bpy.context.object
+        attachment.name = attachment_name.strip('"')  # Set attachment name
+        
+        # Get the parent bone
+        bone = armature.data.bones.get(parent_bone.strip('"'))
+        if bone:
+            # Set attachment location based on the offset
+            attachment.location = (float(offset_x), float(offset_y), float(offset_z))
+            
+            # Calculate cone direction based on Euler angles
+            direction = math.sqrt(math.pow(math.cos(math.radians(float(rot_x))), 2) + math.pow(math.cos(math.radians(float(rot_y))), 2))
+            
+            # Set cone rotation based on Euler angles
+            attachment.rotation_euler = (math.radians(float(rot_z)), 0, math.atan2(math.cos(math.radians(float(rot_x))), math.cos(math.radians(float(rot_y)))))
+            
+            # Parent the attachment to the bone
+            attachment.parent = armature
+            attachment.parent_type = 'BONE'
+            attachment.parent_bone = parent_bone.strip('"')
+            
+            # Set the armature as the active object
+            bpy.context.view_layer.objects.active = armature
+            
+            # Deselect all objects and select the attachment
+            bpy.ops.object.select_all(action='DESELECT')
+            attachment.select_set(True)
+            bpy.context.view_layer.objects.active = attachment
+            
+            # Switch to Object mode and update the attachment
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+
+
+
+class NSQCSkeletonOperator( Operator ):
+    bl_idname = "northstar.qc_skeleton_parser"
+    bl_label = "QC Skeleton Parser"
+    bl_description = "Parse QC Skeleton"
 
     filepath: bpy.props.StringProperty( subtype="FILE_PATH" )
 
@@ -501,20 +550,16 @@ class NSQCParserOperator( Operator ):
         qc_file_path = bpy.path.abspath( self.filepath )
         qc_file_name = get_model_name( qc_file_path )
 
-        #set qc model name in addon prefs
-        context.scene.qc_model_name = qc_file_name
-        perimeterPrint( qc_file_name )
-        global bg_dict
-        bg_dict = return_bodygroup_dict( qc_file_path )
-        bpy.data.screens['Layout'].areas[3].regions[3].tag_redraw()
 
+        qc_file_init = QC( qc_file_path )
+        input_list = []
+        for attachement in qc_file_init.attachements:
+            current_attachement = [ attachement.attachement_name, attachement.parent_bone, attachement.offset_x, attachement.offset_y, attachement.offset_z, attachement.rotate_x, attachement.rotate_y, attachement.rotate_z ]
+            input_list.append(current_attachement)
+
+        create_attachment(input_list)
         #save the qc file path to the addon prefs
         context.scene.qc_file_path = qc_file_path
-        #check if qc was valid and bg_dict is not empty
-        if bg_dict != {} and qc_file_name != "No QC file found":
-            #set bpy.types.Scene.ns_qc_selected = bpy.props.BoolProperty() to true
-            context.scene.ns_qc_selected = True
-
 
 
         return {'FINISHED'}
@@ -522,6 +567,8 @@ class NSQCParserOperator( Operator ):
     def invoke( self, context, event ):
         context.window_manager.fileselect_add( self )
         return {'RUNNING_MODAL'}
+
+
 
 # Sample dictionary
 
@@ -603,7 +650,7 @@ class NSMaterialNamePopup( Operator ):
 class NSAllInOneTestOperator( Operator ):
     bl_idname = "northstar.all_in_one_test"
     bl_label = "All in One"
-    bl_description = "All in One"
+    bl_description = "Compiles the selected QC File with settings, then builds RPAKS if enabled"
 
     def execute( self, context ):
         perimeterPrint( "All in One Test..." )
@@ -639,17 +686,19 @@ class NSAllInOneTestOperator( Operator ):
             else:
 
                 perimeterPrint( "Exporting RPAKs..." )
-                temp_rpak_export_path = context.scene.perimeter_rpak_export_path
-                context.scene.perimeter_rpak_export_path = mod_path + "/paks/"
-                for material in context.scene.perimeter_material_main_collection:
-                    if material.export_rpak:
-                        perimeter_make_rpak( context, material )
-
-                context.scene.perimeter_rpak_export_path = temp_rpak_export_path
-
                 #if paks folder does not exist, create it
                 if not os.path.exists( os.path.join( mod_path, "paks" ) ):
                     os.mkdir( os.path.join( mod_path, "paks" ) )
+
+
+                old_export_path = bpy.context.scene.perimeter_rpak_export_path
+
+                bpy.context.scene.perimeter_rpak_export_path = os.path.join( mod_path, "paks" )
+
+                perimeter_make_refactor_rpak( context, "all_mats" )
+
+
+                bpy.context.scene.perimeter_rpak_export_path = old_export_path
 
                 rpak_json_dict = {"Postload": {}}
                 for file in os.listdir( os.path.join( mod_path, "paks" ) ):
@@ -803,7 +852,7 @@ def make_testmod( self, context ):
         os.makedirs( mod_folder )
         #make mod.json
         mod_json = os.path.join( mod_folder, "mod.json" )
-        mod_json_dict = {"Name": context.scene.compiled_mod_name, "description": "This is a test mod made by Perimeter", "Version": "1.0.0", "LoadPriority": 3}
+        mod_json_dict = {"Name": context.scene.compiled_mod_name, "description": context.scene.compiled_mod_description, "Version": context.scene.compiled_mod_version, "LoadPriority": context.scene.compiled_mod_priority}
         with open( mod_json, 'w' ) as f:
             json.dump( mod_json_dict, f, indent=4 )
         #make models folder in mod folder
@@ -858,7 +907,7 @@ class NSConvertModelOperator( Operator ):
 
 class NSQCFilePanel( bpy.types.Panel ):
     bl_idname = "SIDEBAR_PT_ns_qc_file"
-    bl_label = "QC File Tools"
+    bl_label = "Mod Compiler"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Northstar"
@@ -866,65 +915,55 @@ class NSQCFilePanel( bpy.types.Panel ):
     def draw( self, context ):
         addon_prefs = context.preferences.addons[__name__].preferences
         row = self.layout.column()
-        row.label( text="QC File Info", icon="FILE" )
-        row.operator( "northstar.qc_parser", text="Select QC File", icon="FILE_FOLDER" )
+        #row.label( text="QC File Info", icon="FILE" )
         layout = self.layout
         row = layout.column()
-        qc_file_name = context.scene.qc_model_name
-        row.label( text=qc_file_name, icon="OUTLINER_OB_MESH" )
 
-        # Iterate over the dictionary
-        global bg_dict
-        row.label( text="Bodygroup Visibility Switchers", icon="MODIFIER" )
-        for name, items in bg_dict.items():
-            # Create a button for each name
-            cur = row.operator( "ns.qc_bodygroup", text=name )
-            cur.item_name = name
-            cur.dict_list_string = str( items )
 
         row = layout.row()
         compile_box = layout.box()
         row = compile_box.row()
 
 
-        row.label( text="QC Compilation", icon="MEMORY" )
-
-        row.prop( context.scene, "compiled_mod_name", text="Compiled Name" )
-        row = compile_box.row()
-
-        # Button row
-        col = compile_box.column( align=True )
-        button_row = compile_box.row() # Increase button row height
-        row.prop( context.scene.vs, "export_path", text="SMD/DMX Export Path" )
-        row = compile_box.row()
-        row.label( text="Export Format")
-        row.prop( context.scene.vs, "export_format", expand=True)
+        row.operator( "perimeter.qc_parser", text="Select QC File", icon="FILE_FOLDER" )
         row = compile_box.row()
 
 
+        row.label( text="Mod Packer", icon="PLUGIN" )
+        row = compile_box.column()
+        row.prop( context.scene, "compiled_mod_name", text="Mod Name" )
+        row.prop( context.scene, "compiled_mod_description", text="Description")
+        row.prop( context.scene, "compiled_mod_version", text="Version")
+        row.prop( context.scene, "compiled_mod_priority", text="Priority")
 
-        """
-        button_row.operator( SmdExporter.bl_idname, text="Export Model", icon="EXPORT" )
-        button_row.operator( "northstar.compile_model", text="Compile Model", icon="FILE_3D" )
-        button_row.operator( "northstar.convert_model", text="Convert Model", icon="MOD_WIREFRAME" )
-        """
 
 
         # All in One Test button
-        row = compile_box.column()
-        row.operator( "northstar.export_model", text="Export", icon="EXPORT" )
+        row.label( text="PRE-Compilation steps", icon="PRESET" )
+
         row = compile_box.row()
+        
         row.prop( context.scene, "perimeter_empty_cdmaterials", text="Overwriting CDMATERIALS" if context.scene.perimeter_empty_cdmaterials else "Not Overwriting CDMATERIALS", icon="CHECKMARK" if context.scene.perimeter_empty_cdmaterials else "CANCEL", expand = True)
 
-        row.prop( context.scene, "northstar_rpak_materials_enabled", text="Include RPAKs in Testmod" if context.scene.northstar_rpak_materials_enabled else "RPAKs not Exporting into Testmod", icon="CHECKMARK" if context.scene.northstar_rpak_materials_enabled else "CANCEL", expand = True)
+        row.prop( context.scene, "northstar_rpak_materials_enabled", text="Include RPAKs in Mod" if context.scene.northstar_rpak_materials_enabled else "RPAKs not Exporting into Mod", icon="CHECKMARK" if context.scene.northstar_rpak_materials_enabled else "CANCEL", expand = True)
+        
+        row.prop( context.scene, "perimeter_overwrite_maxvers", text="Overwrite MAXVERS" if context.scene.perimeter_overwrite_maxvers else "Not Overwriting MAXVERTS", icon="CHECKMARK" if context.scene.perimeter_overwrite_maxvers else "CANCEL", expand = True)
+
         row = compile_box.column()
-        if context.scene.has_exported:
+        if context.scene.qc_file_selected:
             row.enabled = True
+            row.label( text="The big Button", icon="SNAP_FACE_CENTER")
+
         else:
+            row.label( text="NO QC FILE SELECTED!", icon="ERROR")
             row.enabled = False
-        row.operator( "northstar.all_in_one_test", text="Compile, Convert and Test!", icon="PLAY" )
+            
+
+        row.operator( "northstar.all_in_one_test", text="Compile Mod", icon="PLAY" )
         row.scale_y = 2.0
         row = compile_box.column()
+        version = str( bl_info["version"][0] ) + "." + str( bl_info["version"][1] )
+        row.label( text="Perimeter v" + version, icon="INFO" )
 
          # Increase button height
 
@@ -1160,11 +1199,12 @@ classes = ( # classes for the register and unregister functions
     NSAddonPreferences, # Addon Preferences
     NSPreferencesStudiomdlSetup, # preferences setup for studiomdl
 
-    NSManagerPanel, # Perimeter tab
+    #NSManagerPanel, # Perimeter tab
     PerimeterMaterialManagementPanel, # Material Management tab
     NSMDLUtilsPanel, # MDLutils tab
     NSQCFilePanel, # QC File tab
-
+    PerimeterQCManagementPanel,
+    PerimeterQCBodygroupManager,
 
     NSGameFolderOperator,  # Game Folder Selector for Studiomdl
     NSLauncherOperator, # Launch button bl_idname: northstar.launcher
@@ -1185,7 +1225,7 @@ classes = ( # classes for the register and unregister functions
     NSListItem, # UIList item for modlist bl_idname: northstar.list_item
     NS_UL_List, # UIList for modlist bl_idname: northstar.ul_list
     QCFileSelectorOperator, # QC File Selector button bl_idname: northstar.qc_file_selector
-    NSQCParserOperator, # QC Parser button bl_idname: northstar.qc_parser
+    PerimeterQCParserOperator, # QC Parser button bl_idname: northstar.qc_parser
     NSQCBodygroupOperator, # QC Bodygroup visiblity switcher button bl_idname: ns.qc_bodygroup
     NSQC_UL_MaterialList, # UIList for QC Material Overrides bl_idname: ns.qc_material_list
     NSQCMaterilListRefreshOperator, # Refresh QC Material Overrides  bl_idname: ns.qc_material_list_refresh
@@ -1197,10 +1237,38 @@ classes = ( # classes for the register and unregister functions
     PeriimeterMaterialManagementAddEmptyShader,
     PerimeterRefreshShader,
     PerimeterMaterialManagementPanelExportRPAK,
+    NSQCSkeletonOperator,
+    PerimeterQCMainCollection,
+    PERIMETER_UL_QCManagementTexturegroupList,
+    PerimeterQCManagementPanelUpdateQCFile,
+    PerimeterTexturegroupItem,
+    PerimeterAddTextureGroupItem,
+    PerimeterRemoveTextureGroupItem,
+    PERIMETER_UL_BodygroupList,
+    PERIMETER_UL_BodygroupMeshList,
+    PerimeterAddBodyGroupItem,
+    PerimeterRemoveBodyGroupItem,
+    PerimeterBodygroupMeshFile,
+    PerimeterBodygroupItem,
+    PerimeterAddBodyGroupMeshItem,
+    PerimeterRemoveBodyGroupMeshItem,   
+    PerimeterWriteBodygroups,
+    PerimeterWriteQCArguments,
+    PerimeterQCManagementPanelWriteTexGroups,
+    PerimeterRUIMeshMaker,
+    PerimeterAnimationsPanel,
+    PerimeterMaterialManagementImportPerimeterMaterial,
+    PerimeterMaterialManagementExportPerimeterMaterial,
+
+
+  
 
  )
 
 preview_collections = {}
+
+surface_prop_list = ['alienflesh', 'arc_grenade', 'boulder', 'cardboard', 'carpet', 'cloth', 'concrete', 'concrete_block', 'default', 'dirt', 'flesh', 'flyerflesh', 'foliage', 'glass', 'glass_breakable', 'glassbottle', 'grass', 'gravel', 'grenade', 'grenade_triple_threat', 'ice', 'metal', 'metal_barrel', 'metal_bouncy', 'metal_box', 'metal_spectre', 'metal_titan', 'metalgrate', 'metalpanel', 'metalvehicle', 'metalvent', 'paper', 'papercup', 'plaster', 'plastic', 'plastic_barrel', 'plastic_barrel_buoyant', 'plastic_box', 'pottery', 'rock', 'rubber', 'rubbertire', 'sand', 'shellcasing_large', 'shellcasing_small', 'solidmetal', 'stone', 'tile', 'upholstery', 'water', 'weapon', 'wood', 'wood_box', 'wood_furniture', 'wood_plank', 'wood_solid', 'xo_shield']
+
 
 def register():
     addon_updater_ops.register(bl_info)
@@ -1210,22 +1278,57 @@ def register():
 
     bpy.types.Scene.northstar_items = CollectionProperty( type=NSListItem )
     bpy.types.Scene.northstar_items_index = bpy.props.IntProperty()
-    bpy.types.Scene.compiled_mod_name = bpy.props.StringProperty()
+
+
+    bpy.types.Scene.compiled_mod_name = bpy.props.StringProperty(default="Perimeter Mod")
+    bpy.types.Scene.compiled_mod_description = bpy.props.StringProperty(default="Mod made using Perimeter")
+    bpy.types.Scene.compiled_mod_version = bpy.props.StringProperty(default="1.0.0")
+    bpy.types.Scene.compiled_mod_priority = bpy.props.IntProperty(min=-5, max=40, default=3)
+
+
     bpy.types.Scene.material_path = bpy.props.StringProperty()
     bpy.types.Scene.ns_qc_selected = bpy.props.BoolProperty()
     bpy.types.Scene.mdlshit_mdl = bpy.props.StringProperty()
-    bpy.types.Scene.qc_file_path = bpy.props.StringProperty()
-    bpy.types.Scene.qc_model_name = bpy.props.StringProperty()
+    bpy.types.Scene.qc_file_path = bpy.props.StringProperty(subtype='FILE_PATH')
     bpy.types.Scene.has_exported = bpy.props.BoolProperty()
     bpy.types.Scene.northstar_rpak_materials_enabled = bpy.props.BoolProperty()
     bpy.types.Scene.perimeter_material_main_collection = CollectionProperty( type=PerimeterMaterialMainCollection )
     bpy.types.Scene.perimeter_material_main_collection_index = bpy.props.IntProperty()
+
+    #QC SHIT
+    bpy.types.Scene.perimeter_qc_main_collection = CollectionProperty( type=PerimeterQCMainCollection )
+    bpy.types.Scene.perimeter_qc_main_collection_index = bpy.props.IntProperty()
+    bpy.types.Scene.qc_model_name = bpy.props.StringProperty()
+    bpy.types.Scene.qc_surfaceprop = bpy.props.StringProperty()
+    bpy.types.Scene.qc_maxverts = bpy.props.StringProperty()
+    bpy.types.Scene.texturegroup_materials = bpy.props.CollectionProperty(type=PerimeterTexturegroupItem)
+    bpy.types.Scene.qc_texturegroup_name = bpy.props.StringProperty()
+    bpy.types.Scene.qc_expand_texturegroups = bpy.props.BoolProperty( default=True)
+
+    bpy.types.Scene.perimeter_bodygroup_collection = CollectionProperty( type=PerimeterBodygroupItem )
+    bpy.types.Scene.perimeter_bodygroup_collection_index = bpy.props.IntProperty()
+    bpy.types.Scene.perimeter_mesh_file_collection = CollectionProperty( type=PerimeterBodygroupMeshFile )
+    bpy.types.Scene.perimeter_mesh_file_collection_index = bpy.props.IntProperty()
+    bpy.types.Scene.qc_bodygroups_found = bpy.props.BoolProperty( default=False)
+
+    bpy.types.Scene.surfaceprops = bpy.props.EnumProperty( items=[ (sprop, sprop, "") for sprop in surface_prop_list ],
+                                                default="default" )
+    
+
+    bpy.types.Scene.qc_file_selected = bpy.props.BoolProperty( default=False )
+
     bpy.types.Scene.perimeter_expand_rpak_slots = bpy.props.BoolProperty()
     bpy.types.Scene.perimeter_expand_rpak_slots_advanced = bpy.props.BoolProperty()
     bpy.types.Scene.perimeter_rpak_export_path = bpy.props.StringProperty( subtype="DIR_PATH" )
     bpy.types.Scene.perimeter_empty_cdmaterials = bpy.props.BoolProperty()
+    bpy.types.Scene.perimeter_overwrite_maxvers = bpy.props.BoolProperty()
+
+    bpy.types.Scene.test1 = bpy.props.BoolProperty()
+    bpy.types.Scene.test2 = bpy.props.BoolProperty()
 
 
+
+    
 
 
 def unregister():
@@ -1243,13 +1346,25 @@ def unregister():
     del bpy.types.Scene.northstar_rpak_materials_enabled
     del bpy.types.Scene.perimeter_material_main_collection
     del bpy.types.Scene.perimeter_material_main_collection_index
+    del bpy.types.Scene.perimeter_qc_main_collection
+    del bpy.types.Scene.perimeter_qc_main_collection_index
     del bpy.types.Scene.perimeter_expand_rpak_slots
     del bpy.types.Scene.perimeter_expand_rpak_slots_advanced
     del bpy.types.Scene.perimeter_rpak_export_path
     del bpy.types.Scene.perimeter_empty_cdmaterials
+    del bpy.types.Scene.qc_surfaceprop
+    del bpy.types.Scene.qc_maxverts
+    del bpy.types.Scene.texturegroup_materials
+    del bpy.types.Scene.qc_expand_texturegroups
+    del bpy.types.Scene.perimeter_bodygroup_collection
+    del bpy.types.Scene.perimeter_bodygroup_collection_index
+    del bpy.types.Scene.perimeter_mesh_file_collection
+    del bpy.types.Scene.perimeter_mesh_file_collection_index
+    del bpy.types.Scene.surfaceprops
+    del bpy.types.Scene.test1
+    del bpy.types.Scene.test2
+    del bpy.types.Scene.qc_file_selected
 
-
-
-
+    
 if __name__ == "__main__":
     register()
