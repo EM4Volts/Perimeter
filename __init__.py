@@ -1170,8 +1170,6 @@ class NSAddonPreferences( AddonPreferences ):
         layout.label( text="Perimeter Settings")
         layout.prop( self, "ns_launch_exe" )
         layout.prop( self, "texture_path" )
-        layout.prop( self, "launch_args" )
-        layout.prop( self, "perimeter_panel_enabled" )
 
         #make box
         row = layout.box()
