@@ -156,6 +156,8 @@
 #UINT16 PADDING
 #UINT64 PADDING
 
+#begin shaderflags
+
 #UINT32 rpak_unkFlags                     
 #UINT16 rpak_depthStencilFlags            
 #UINT16 rpak_rasterizerFlags          
@@ -167,10 +169,39 @@
 #UINT32 rpak_blendState2
 #UINT32 rpak_blendState3
 
+
+#begin tint vectors
+
 #FLOATVECTOR3 rpak_albedoTint                   
 #FLOATVECTOR3 rpak_selfillum                     
 #FLOATVECTOR3 c_perfSpecColor                    
 
+
+#begin cpu_file_contents_misc
+
+
+#FLOAT c_uv1RotScaleX_x
+#FLOAT c_uv1RotScaleX_y
+#FLOAT c_uv1RotScaleY_x
+#FLOAT c_uv1RotScaleY_y
+#FLOAT c_uv1Translate_x
+#FLOAT c_uv1Translate_y
+#FLOAT c_uv2RotScaleX_x
+#FLOAT c_uv2RotScaleX_y
+#FLOAT c_uv2RotScaleY_x
+#FLOAT c_uv2RotScaleY_y
+#FLOAT c_uv2Translate_x
+#FLOAT c_uv2Translate_y
+#FLOAT c_uv3RotScaleX_x
+#FLOAT c_uv3RotScaleX_y
+#FLOAT c_uv3RotScaleY_x
+#FLOAT c_uv3RotScaleY_y
+#FLOAT c_uv3Translate_x
+#FLOAT c_uv3Translate_y
+#FLOAT c_uvDistortionIntensity_x
+#FLOAT c_uvDistortionIntensity_y
+#FLOAT c_uvDistortion2Intensity_x
+#FLOAT c_uvDistortion2Intensity_y  
 #FLOAT c_fogColorFactor                      
 #FLOAT c_layerBlendRamp                      
 #FLOAT c_opacity                     
@@ -193,9 +224,6 @@
 #FLOAT c_dofOpacityLuminanceScale                                
 #FLOAT c_perfGloss   
 
-
-#UINT32 PADDING                     
-#UINT32 PADDING  
 #UINT32 PADDING  
 
 #
@@ -209,6 +237,9 @@
 #END FORMAT VERSION[120] END FORMAT
 #END FORMAT VERSION[120] END FORMAT
 #END FORMAT VERSION[120] END FORMAT
+
+
+
 
 
 
@@ -259,7 +290,31 @@ class PEMA_FILE:  # Class should always be up to date for WRITING the newest pem
 
                 self.rpak_albedoTint                = Vector3(read_float(pma_file), read_float(pma_file), read_float(pma_file))                   
                 self.rpak_selfillum                 = Vector3(read_float(pma_file), read_float(pma_file), read_float(pma_file))                     
-                self.c_perfSpecColor                = Vector3(read_float(pma_file), read_float(pma_file), read_float(pma_file))                    
+                self.c_perfSpecColor                = Vector3(read_float(pma_file), read_float(pma_file), read_float(pma_file))           
+
+                self.c_uv1RotScaleX_x               = read_float(pma_file) 
+                self.c_uv1RotScaleX_y               = read_float(pma_file) 
+                self.c_uv1RotScaleY_x               = read_float(pma_file) 
+                self.c_uv1RotScaleY_y               = read_float(pma_file) 
+                self.c_uv1Translate_x               = read_float(pma_file) 
+                self.c_uv1Translate_y               = read_float(pma_file) 
+                self.c_uv2RotScaleX_x               = read_float(pma_file) 
+                self.c_uv2RotScaleX_y               = read_float(pma_file) 
+                self.c_uv2RotScaleY_x               = read_float(pma_file) 
+                self.c_uv2RotScaleY_y               = read_float(pma_file) 
+                self.c_uv2Translate_x               = read_float(pma_file) 
+                self.c_uv2Translate_y               = read_float(pma_file) 
+                self.c_uv3RotScaleX_x               = read_float(pma_file) 
+                self.c_uv3RotScaleX_y               = read_float(pma_file) 
+                self.c_uv3RotScaleY_x               = read_float(pma_file) 
+                self.c_uv3RotScaleY_y               = read_float(pma_file) 
+                self.c_uv3Translate_x               = read_float(pma_file) 
+                self.c_uv3Translate_y               = read_float(pma_file) 
+                self.c_uvDistortionIntensity_x      = read_float(pma_file) 
+                self.c_uvDistortionIntensity_y      = read_float(pma_file) 
+                self.c_uvDistortion2Intensity_x     = read_float(pma_file) 
+                self.c_uvDistortion2Intensity_y     = read_float(pma_file) 
+
                 self.c_fogColorFactor               = read_float(pma_file)                 
                 self.c_layerBlendRamp               = read_float(pma_file)                
                 self.c_opacity                      = read_float(pma_file)        
@@ -282,7 +337,7 @@ class PEMA_FILE:  # Class should always be up to date for WRITING the newest pem
                 self.c_dofOpacityLuminanceScale     = read_float(pma_file)                           
                 self.c_perfGloss                    = read_float(pma_file)
 
-                pma_file.seek(192)
+                pma_file.seek(272)
 
                 self.rpak_surfacetype       	    = read_string(pma_file)               
                 self.rpak_type                      = read_string(pma_file)           
@@ -291,13 +346,6 @@ class PEMA_FILE:  # Class should always be up to date for WRITING the newest pem
 
 
         pma_file.close()
-
-
-
-
-        
-
-
 
     def write_header_to_file(pma_file, header_version):
 
@@ -340,6 +388,31 @@ class PEMA_FILE:  # Class should always be up to date for WRITING the newest pem
 
         for float in return_blender_vector3(material.c_perfSpecColor):
             write_float(pma_file, float)
+
+        
+        write_float(pma_file, material.c_uv1RotScaleX_x)
+        write_float(pma_file, material.c_uv1RotScaleX_y)
+        write_float(pma_file, material.c_uv1RotScaleY_x)
+        write_float(pma_file, material.c_uv1RotScaleY_y)
+        write_float(pma_file, material.c_uv1Translate_x)
+        write_float(pma_file, material.c_uv1Translate_y)
+        write_float(pma_file, material.c_uv2RotScaleX_x)
+        write_float(pma_file, material.c_uv2RotScaleX_y)
+        write_float(pma_file, material.c_uv2RotScaleY_x)
+        write_float(pma_file, material.c_uv2RotScaleY_y)
+        write_float(pma_file, material.c_uv2Translate_x)
+        write_float(pma_file, material.c_uv2Translate_y)
+        write_float(pma_file, material.c_uv3RotScaleX_x)
+        write_float(pma_file, material.c_uv3RotScaleX_y)
+        write_float(pma_file, material.c_uv3RotScaleY_x)
+        write_float(pma_file, material.c_uv3RotScaleY_y)
+        write_float(pma_file, material.c_uv3Translate_x)
+        write_float(pma_file, material.c_uv3Translate_y)
+        write_float(pma_file, material.c_uvDistortionIntensity_x)
+        write_float(pma_file, material.c_uvDistortionIntensity_y)
+        write_float(pma_file, material.c_uvDistortion2Intensity_x)
+        write_float(pma_file, material.c_uvDistortion2Intensity_y)
+
         write_float(pma_file, material.c_fogColorFactor)                      
         write_float(pma_file, material.c_layerBlendRamp)                      
         write_float(pma_file, material.c_opacity)                     
@@ -364,8 +437,7 @@ class PEMA_FILE:  # Class should always be up to date for WRITING the newest pem
         
         #write padding for string table
         write_uInt32(pma_file, 0)
-        write_uInt32(pma_file, 0)
-        write_uInt32(pma_file, 0)
+
 
         write_string(pma_file, material.rpak_surfacetype)                  
         write_string(pma_file, material.rpak_type)                         

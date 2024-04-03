@@ -100,8 +100,9 @@ def save_material_override( qc_file_path, material_override ):
             qc_file.close(  )
 
 def remove_cdmaterials( qc_file_path ):
-    
+    print("1")
     if not qc_file_path.lower().endswith( ".qc" ):
+        print("return null")
         return ""
     else:
 
@@ -112,6 +113,7 @@ def remove_cdmaterials( qc_file_path ):
             qc_file_lines = qc_file.readlines(  )
             for line in qc_file_lines:
                 if line.lower().startswith("$cdmaterials"):
+                    print(line)
                     lines_to_remove.append( line )
 
             for line in lines_to_remove:
@@ -123,3 +125,27 @@ def remove_cdmaterials( qc_file_path ):
             qc_file.writelines( qc_file_lines )
             qc_file.close(  )
 
+
+def change_maxverts( qc_file_path ):
+    
+    if not qc_file_path.lower().endswith( ".qc" ):
+        return ""
+    else:
+
+        lines_to_remove = [] 
+        #hacky solution incoming
+
+        with open( qc_file_path, "r" ) as qc_file:
+            qc_file_lines = qc_file.readlines(  )
+            for line in qc_file_lines:
+                if line.lower().startswith("$maxverts"):
+                    lines_to_remove.append( line )
+
+            for line in lines_to_remove:
+                qc_file_lines.remove( line )
+                qc_file.close(  )
+
+        with open( qc_file_path, "w" ) as qc_file:
+            qc_file.writelines( '$maxverts 99900""\n')
+            qc_file.writelines( qc_file_lines )
+            qc_file.close(  )

@@ -33,117 +33,7 @@ def convert_textures( texconv_path, asset_path ):
 
 
 
-def perimeter_make_rpak_map( rpak_params, rpak_slots, slot_map_names, material_slot_name): #legacy rpak map maper for old non refactor repak
 
-    addon_prefs = bpy.context.preferences.addons[__package__].preferences
-
-    preset_json ={
-
-        "name": "",
-        "assetsDir": "../perimeter_assets",
-        "outputDir": "../perimeter_rpaks",
-        "starpakPath":"",
-        "version": 7,
-        "files":[
-        ]
-    }
-
-    files_sub_preset_json =   {
-            "$type": "matl",
-            "visibilityflags": "opaque",
-            "faceflags": 6,
-            "version": 12,
-            "path": "",
-            "type": "skn",
-            "subtype": "viewmodel",
-            "surface": "default",
-            "width": 2048,
-            "height": 2048,
-            "materialrefs": [ "code_private/depth_shadow", "code_private/depth_prepass", "code_private/depth_vsm" ],
-            "flags": "",
-            "flags2": "",
-            "shaderset": "",
-            "selfillumtint": [
-                1.0,
-                1.0,
-                1.0
-            ],
-            "textures": [
-            ]
-        }
-
-    this_rpak_token = secrets.token_hex(8)
-    rpak_map_json = preset_json
-    rpak_map_json["name"] = rpak_params["rpak_name"] + "_" + this_rpak_token
-    rpak_map_json["starpakPath"] = f'{rpak_params["rpak_name"]}_{this_rpak_token}.starpak'
-    rpak_map_json["visibilityflags"] = rpak_params["visibilityflags"]
-    rpak_map_json["faceflags"] = rpak_params["faceflags"]
-    rpak_map_json["outputDir"] = rpak_params["rpak_export_path"].replace("//", "/").replace("\\", "/")
-    rpak_map_json["assetsDir"] = os.path.dirname(addon_prefs.repak_path) + "/perimeter_assets"
-
-    normalized_slots = []
-    for rpak_slot in rpak_slots:
-        if rpak_slot == "None":
-            normalized_slots.append("")
-        else:
-            if rpak_slot.endswith(".png"):
-                normalized_slot_name = rpak_params["rpak_asset_path"] + "/"+ material_slot_name + slot_map_names[rpak_slots.index(rpak_slot)]
-
-                if normalized_slot_name.startswith("/"):
-                    normalized_slot_name = normalized_slot_name[1:]
-
-                normalized_slots.append( normalized_slot_name.replace("//", "/").removesuffix(".png") )
-            else:
-                normalized_slots.append("")
-
-
-    for slot in normalized_slots:
-        if slot != "":
-            rpak_map_json["files"].append( { "$type":"txtr","path":f'{slot}'.replace("//", "/").replace(".png", "").replace(".jpg", "").replace(".tga", ""),"saveDebugName": True} )
-
-    #append this part into the files list of the rpak map json and populate with the right texture paths: 		{"$type":"matl","visibilityflags": "opaque","faceflags": 6,"version":12,"path":"","type": "skn","subtype":"viewmodel","surface": "default","width": 2048,"height": 2048,"selfillumtint": [1.0, 1.0, 1.0],"textures":["col","nml","gls","spc","","","","","","","","ao","cav"]   }
-
-
-    normalized_selfillum = []
-    for selfillum in rpak_params["selfillum"]:
-        normalized_selfillum.append( float( str(selfillum)[:4] ) )
-
-
-    files_sub_preset_json["path"] = f'{rpak_params["rpak_asset_path"]}/{rpak_params["rpak_name"]}'.replace("//", "/")
-    files_sub_preset_json["type"] = rpak_params["rpak_type"]
-
-    
-    files_sub_preset_json["surface"] = rpak_params["rpak_surface_type"]
-    if not rpak_params["flag_1"] == "":
-        files_sub_preset_json["flags"] = rpak_params["flag_1"]
-    if not rpak_params["flag_2"] == "":
-        files_sub_preset_json["flags2"] = rpak_params["flag_2"]
-
-    if not rpak_params["shaderset"] == "Default" or rpak_params["shaderset"] == "":
-        
-        print( rpak_params["shaderset"])
-
-    files_sub_preset_json["selfillumtint"] = normalized_selfillum
-    files_sub_preset_json["textures"] = normalized_slots
-    files_sub_preset_json["visibilityflags"] = rpak_params["visibilityflags"]
-
-    if rpak_params["preset"] == "skn31":
-        files_sub_preset_json["subtype"] = "viewmodel_skn31"
-        files_sub_preset_json["shaderset"] = "uberAoCavEmitDetovrDtmUV2000000010Samp222222222_skn"
-        files_sub_preset_json["detailtransform"] = [4.0, 0.0, -0.0, 4.0, 0.0, 0.0]
-        files_sub_preset_json["color2"] = [ 1.0, 1.0, 1.0]
-
-    else:
-        files_sub_preset_json["subtype"] = rpak_params["rpak_subtype"]
-
-    rpak_map_json["files"].append( files_sub_preset_json )
-    
-
-    repak_path = os.path.dirname(addon_prefs.repak_path) 
-    json_map_name = f'{repak_path}/perimeter_repak_map_{rpak_params["rpak_name"]}.json'
-    json.dump(rpak_map_json, open(f"{json_map_name}", "w"), indent=4)
-
-    return json_map_name
 
 
 def perimeter_make_refactor_map(materials):
@@ -294,17 +184,16 @@ def perimeter_make_refactor_map(materials):
         new_material_json["depthStencilFlags"]  = material.rpak_depthStencilFlags
         new_material_json["rasterizerFlags"]    = material.rpak_rasterizerFlags
         new_material_json["shaderset"] = material.rpak_manual_shaderset
-        new_material_json["blendState0"] = material.rpak_blendState0
-        new_material_json["blendState1"] = material.rpak_blendState1
-        new_material_json["blendState2"] = material.rpak_blendState2
-        new_material_json["blendState3"] = material.rpak_blendState3
+        new_material_json["blendState0"] = int(material.rpak_blendState0)
+        new_material_json["blendState1"] = int(material.rpak_blendState1)
+        new_material_json["blendState2"] = int(material.rpak_blendState2)
+        new_material_json["blendState3"] = int(material.rpak_blendState3)
         new_material_json["cpuPath"] = material_cpu_path
         new_material_json["emissiveTint"] = normalized_selfillum
         new_material_json["albedoTint"] = normalized_albedotint
         for slot in normalized_slots:
             new_material_json["textures"].append(slot.replace("//", "/").replace(".png", "").replace(".jpg", "").replace(".tga", ""))
 
-        print(material.rpak_preset)
         materials_paths_list.append(os.path.dirname(addon_prefs.repak_path) + "/perimeter_assets/" + material_path)
 
         cpu_file_queue.append([material_cpu_path, material])
@@ -324,28 +213,28 @@ def make_cpu(path, material): #writes a 224 bytes big cpu struct file to the giv
     addon_prefs = bpy.context.preferences.addons[__package__].preferences
     cpu_file = open(os.path.dirname(addon_prefs.repak_path) + "/perimeter_assets/" + path, "wb+")
 
-    cpu_first_skip_segment = [ 1.000000,                    #EACH ENTRY HERE IS A VECTOR2, WRITEN AS FLOATS
-    0.000000,                               #c_uv1RotScaleX
-    0.000000,                               
-    1.000000,                               #c_uv1RotScaleY
-    0.000000,                               
-    0.000000,                               #c_uv1Translate
-    1.000000,                               
-    0.000000,                               #c_uv2RotScaleX
-    0.000000,                               
-    1.000000,                               #c_uv2RotScaleY
-    0.000000,                               
-    0.000000,                               #c_uv2Translate
-    1.000000,                               
-    0.000000,                               #c_uv3RotScaleX
-    0.000000,                               
-    1.000000,                               #c_uv3RotScaleY
-    0.000000,                               
-    0.000000,                               #c_uv3Translate
-    0.000000,                               
-    0.000000,                               #c_uvDistortionIntensity
-    0.000000,                               
-    0.000000                                #c_uvDistortion2Intensity
+    cpu_first_skip_segment = [ material.c_uv1RotScaleX_x, 
+    material.c_uv1RotScaleX_y, 
+    material.c_uv1RotScaleY_x, 
+    material.c_uv1RotScaleY_y, 
+    material.c_uv1Translate_x, 
+    material.c_uv1Translate_y, 
+    material.c_uv2RotScaleX_x, 
+    material.c_uv2RotScaleX_y, 
+    material.c_uv2RotScaleY_x, 
+    material.c_uv2RotScaleY_y, 
+    material.c_uv2Translate_x, 
+    material.c_uv2Translate_y, 
+    material.c_uv3RotScaleX_x, 
+    material.c_uv3RotScaleX_y, 
+    material.c_uv3RotScaleY_x, 
+    material.c_uv3RotScaleY_y, 
+    material.c_uv3Translate_x, 
+    material.c_uv3Translate_y, 
+    material.c_uvDistortionIntensity_x, 
+    material.c_uvDistortionIntensity_y, 
+    material.c_uvDistortion2Intensity_x, 
+    material.c_uvDistortion2Intensity_y
     ]
 
     #write the first part of the cpu that is currently not user changable

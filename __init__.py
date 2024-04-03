@@ -43,7 +43,6 @@ from .rpak import *
 from .material_management_panel import *
 from .qcparse import *
 from .qc_management_panel import *
-from .animation_management_panel import *
 
 
 
@@ -726,7 +725,7 @@ def compile_model( context ):
     
     qc_file_path = bpy.path.abspath( context.scene.qc_file_path )
     qc_file_name = get_model_name( qc_file_path )
-    perimeterPrint( qc_file_name )
+    perimeterPrint( qc_file_path )
     renamemateriallines = []
     write_material_override = False
     for material in context.scene.perimeter_material_main_collection:
@@ -738,10 +737,14 @@ def compile_model( context ):
     if write_material_override:
         save_material_override( qc_file_path, renamemateriallines)
 
-    #get the studiomdl.exe path
-    #make stripped gameinfo path by stripping the file name from the gameinfo path
     if context.scene.perimeter_empty_cdmaterials:
+        print("pr_")
         remove_cdmaterials( qc_file_path )
+
+    if context.scene.perimeter_overwrite_maxverts:
+        change_maxverts( qc_file_path )
+
+
     stripped_gameinfo_path = os.path.dirname(addon_prefs.gameinfo_path)
     stuidmdlpath_complete = addon_prefs.mdlstudio_path
     gameinfopaath_complete = '"' + stripped_gameinfo_path + '\\"'
@@ -947,7 +950,7 @@ class NSQCFilePanel( bpy.types.Panel ):
 
         row.prop( context.scene, "northstar_rpak_materials_enabled", text="Include RPAKs in Mod" if context.scene.northstar_rpak_materials_enabled else "RPAKs not Exporting into Mod", icon="CHECKMARK" if context.scene.northstar_rpak_materials_enabled else "CANCEL", expand = True)
         
-        row.prop( context.scene, "perimeter_overwrite_maxvers", text="Overwrite MAXVERS" if context.scene.perimeter_overwrite_maxvers else "Not Overwriting MAXVERTS", icon="CHECKMARK" if context.scene.perimeter_overwrite_maxvers else "CANCEL", expand = True)
+        row.prop( context.scene, "perimeter_overwrite_maxverts", text="Overwrite MAXVERTS" if context.scene.perimeter_overwrite_maxverts else "Not Overwriting MAXVERTS", icon="CHECKMARK" if context.scene.perimeter_overwrite_maxverts else "CANCEL", expand = True)
 
         row = compile_box.column()
         if context.scene.qc_file_selected:
@@ -1256,7 +1259,6 @@ classes = ( # classes for the register and unregister functions
     PerimeterWriteQCArguments,
     PerimeterQCManagementPanelWriteTexGroups,
     PerimeterRUIMeshMaker,
-    PerimeterAnimationsPanel,
     PerimeterMaterialManagementImportPerimeterMaterial,
     PerimeterMaterialManagementExportPerimeterMaterial,
 
@@ -1321,7 +1323,7 @@ def register():
     bpy.types.Scene.perimeter_expand_rpak_slots_advanced = bpy.props.BoolProperty()
     bpy.types.Scene.perimeter_rpak_export_path = bpy.props.StringProperty( subtype="DIR_PATH" )
     bpy.types.Scene.perimeter_empty_cdmaterials = bpy.props.BoolProperty()
-    bpy.types.Scene.perimeter_overwrite_maxvers = bpy.props.BoolProperty()
+    bpy.types.Scene.perimeter_overwrite_maxverts = bpy.props.BoolProperty()
 
     bpy.types.Scene.test1 = bpy.props.BoolProperty()
     bpy.types.Scene.test2 = bpy.props.BoolProperty()

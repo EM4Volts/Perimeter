@@ -55,6 +55,9 @@ def return_bones ( lines_list ):
             bone_list.append( BONE( line ) )
     return bone_list
 
+
+
+
 def return_bodygroups( lines ): #parse bodygroups, code copied from perimeter slighly altered
         
         bodygroup_dict = {}
@@ -113,6 +116,7 @@ def write_bodygroups_to_file(qc_file, bodygroup_dict):
 
     # Process the file content
     while i < len(lines):
+
         line = lines[i].strip()
 
         if line.startswith('$bodygroup'):
