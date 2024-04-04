@@ -125,7 +125,7 @@ class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
     rpak_type: bpy.props.StringProperty( default="skn" ) #type for the material
 
     rpak_flag_1: bpy.props.StringProperty( default="1D0300" ) #flag 1 for the material
-    rpak_flag_2: bpy.props.StringProperty( default="56000020" ) #flag 2 for the material
+    rpak_flag_2: bpy.props.StringProperty( default="10000056000020" ) #flag 2 for the material
 
     rpak_selfillum_enabled: bpy.props.BoolProperty( default=False ) #whether or not selfillum is enabled for the material
 
@@ -165,7 +165,7 @@ class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
     rpak_blendState0: bpy.props.StringProperty( default="4027809796" )
     rpak_blendState1: bpy.props.StringProperty( default="4027809796" )
     rpak_blendState2: bpy.props.StringProperty( default="4027809796" )
-    rpak_blendState3: bpy.props.StringProperty( default="1277957" )
+    rpak_blendState3: bpy.props.StringProperty( default="1277956" )
 
     #       _  _ ____ ___ ____ ____ _ ____ _       ____ _  _ ____ ____ ____ _ ___  ____ ____
     #       |\/| |__|  |  |___ |__/ | |__| |       |  | |  | |___ |__/ |__/ | |  \ |___ [__
