@@ -146,6 +146,6 @@ def change_maxverts( qc_file_path ):
                 qc_file.close(  )
 
         with open( qc_file_path, "w" ) as qc_file:
-            qc_file.writelines( '$maxverts 99900""\n')
+            qc_file.writelines( '$maxverts 99900\n')
             qc_file.writelines( qc_file_lines )
             qc_file.close(  )

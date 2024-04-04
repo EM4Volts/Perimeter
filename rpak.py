@@ -155,7 +155,7 @@ def perimeter_make_refactor_map(materials):
             if rpak_slot == "None":
                 normalized_slots.append("")
             else:
-                if rpak_slot.endswith(".png"):
+                if rpak_slot.lower().endswith(".png"):
                     normalized_slot_name = material.blender_material.name.split("/")[-1] + secrets.token_hex(4) + "_slot_" + str(material_slot_index)
 
                     if normalized_slot_name.startswith("/"):

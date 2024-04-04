@@ -243,7 +243,7 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                 row.label( text="Blender Name:" )
                 row.label( text=selected_item.blender_material.name )
                 row = box.row()
-                #row.prop( selected_item, "export_rpak", text="Export in RPAK" )
+                row.prop( selected_item, "export_rpak", text="Export in RPAK" )
                 
                 if not selected_item.rpak_shader_is_set:
                     row.label( text="RPAK Shader Not Set", icon="ERROR" )
@@ -253,10 +253,10 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
 
                 if selected_item.export_rpak:
                     row = box.row()
-                    row.prop( context.scene, "perimeter_rpak_export_path", text="RPAK Export Path" )
+                    #row.prop( context.scene, "perimeter_rpak_export_path", text="RPAK Export Path" )
                     row = box.row()
                     row.scale_y = 2.0
-                    row.operator( "perimeter.material_management_panel_export_rpak", text="Export RPAK", icon="EXPORT" )
+                    #row.operator( "perimeter.material_management_panel_export_rpak", text="Export RPAK", icon="EXPORT" )
                     row = box.row()
                     row.label( text="RPAK Asset Path (path without material):" )
                     row.label( text=selected_item_rpak_path )
