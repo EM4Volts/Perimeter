@@ -21,17 +21,15 @@ from .ioUtils import *
 
 def convert_textures( texconv_path, asset_path ):
      for filename in os.scandir(asset_path):
-        if filename.name.endswith("nml.png"):
+        if filename.lower().name.endswith("nml.png"):
             tex_conv_args_list = [texconv_path, "-f", "BC5_UNORM", "-srgb", "-ft", "dds", filename.path, "-o", asset_path]
         else:
-            if filename.name.endswith("gls.png"):
+            if filename.lower().name.endswith("gls.png"):
                 tex_conv_args_list = [texconv_path, "-f", "BC4_UNORM", "-srgbi", "-ft", "dds", filename.path, "-o", asset_path]
             else:
                 tex_conv_args_list = [texconv_path, "-f", "BC1_UNORM_SRGB", "-srgbi", "-ft", "dds", filename.path, "-o", asset_path]
 
         subprocess.call( tex_conv_args_list , shell=True )
-
-
 
 
 
