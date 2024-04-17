@@ -48,6 +48,8 @@ class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
     #       |  \ |    |  | | \_    ___] |  |  \/  |___ |__/    ___]  |  |__| |    |
 
 
+    rpak_export_in_single_rpak: bpy.props.BoolProperty( default=False )
+
     rpak_shader_is_set: bpy.props.BoolProperty( default=False ) #whether or not the rpak shader is set
 
     rpak_asset_path: bpy.props.StringProperty(default="") #path to the material in the rpak, used for exporting the rpak map
@@ -106,8 +108,8 @@ class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
     c_uv3RotScaleY_y: bpy.props.FloatProperty(default=1.0)
     c_uv3Translate_x: bpy.props.FloatProperty(default=0.0)
     c_uv3Translate_y: bpy.props.FloatProperty(default=0.0)
-    c_uvDistortionIntensity_x: bpy.props.FloatProperty(default=0.0) 
-    c_uvDistortionIntensity_y: bpy.props.FloatProperty(default=0.0) 
+    c_uvDistortionIntensity_x: bpy.props.FloatProperty(default=0.0)
+    c_uvDistortionIntensity_y: bpy.props.FloatProperty(default=0.0)
     c_uvDistortion2Intensity_x: bpy.props.FloatProperty(default=0.0)
     c_uvDistortion2Intensity_y: bpy.props.FloatProperty(default=0.0)
 
@@ -118,7 +120,7 @@ class PerimeterMaterialMainCollection( bpy.types.PropertyGroup ):
     rpak_manual_shaderset: bpy.props.StringProperty( default="0xBD04CCCC982F8C15" ) #manual shaderset for the rpak
 
     rpak_faceflags: bpy.props.IntProperty( default=6 ) #face flags for the material
-    
+
     rpak_surfacetype: bpy.props.EnumProperty( items=[ (sprop, sprop, "") for sprop in surface_prop_list ],
                                                 default="default" )
     rpak_subtype: bpy.props.StringProperty( default="viewmodel" ) #subtype for the material
@@ -244,7 +246,7 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                 row.label( text=selected_item.blender_material.name )
                 row = box.row()
                 row.prop( selected_item, "export_rpak", text="Export in RPAK" )
-                
+
                 if not selected_item.rpak_shader_is_set:
                     row.label( text="RPAK Shader Not Set", icon="ERROR" )
                     row.enabled = False
@@ -253,10 +255,8 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
 
                 if selected_item.export_rpak:
                     row = box.row()
-                    #row.prop( context.scene, "perimeter_rpak_export_path", text="RPAK Export Path" )
                     row = box.row()
                     row.scale_y = 2.0
-                    #row.operator( "perimeter.material_management_panel_export_rpak", text="Export RPAK", icon="EXPORT" )
                     row = box.row()
                     row.label( text="RPAK Asset Path (path without material):" )
                     row.label( text=selected_item_rpak_path )
@@ -279,7 +279,7 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                         row.prop( selected_item, "rpak_slot_13", text="13 (cav/cvt)" )
                         row.prop( selected_item, "rpak_slot_14", text="14 (opa)" )
                         row.prop( selected_item, "rpak_slot_15", text="15 (detail)" )
-                        row.prop( selected_item, "rpak_slot_16", text="16 (dm_nml)" )  
+                        row.prop( selected_item, "rpak_slot_16", text="16 (dm_nml)" )
                         row.prop( selected_item, "rpak_slot_17", text="17 (msk)" )
                         row.prop( selected_item, "rpak_slot_18", text="18" )
                         row.prop( selected_item, "rpak_slot_19", text="19" )
@@ -300,7 +300,7 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
 
                     #row = box.row()
                     #row.prop( selected_item, "rpak_preset", text="Preset" ) #disabled in favor of PMAT
-                    
+
                     #row = box.row()
                     #row.prop( selected_item, "rpak_shaderset", text="Shaderset" )
                     row = box.column()
@@ -313,9 +313,9 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                     row.operator( "perimeter.export_pema", text="Export .pma", icon="EXPORT" )
 
                     row = box.column()
-                    
-                    row = box.column()   
-                            
+
+                    row = box.column()
+
                     #row.prop( selected_item, "rpak_preset", text="Repak Internal Preset" )
                     row.prop( selected_item, "rpak_surfacetype", text="Surfacetype" )
                     row.prop( selected_item, "rpak_type", text="Type" )
@@ -342,40 +342,40 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                         #row.operator( "perimeter.import_cpu", text="Import from CPU file", icon="IMPORT" )
                         #no importer, instead relay values and build cpu file on demand
 
-                        row = box.row()   
+                        row = box.row()
                         row.prop( selected_item, "c_uv1RotScaleX_x")
-                        row.prop( selected_item, "c_uv1RotScaleX_y")       
-                        row = box.row()   
+                        row.prop( selected_item, "c_uv1RotScaleX_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uv1RotScaleY_x")
-                        row.prop( selected_item, "c_uv1RotScaleY_y")   
-                        row = box.row()   
+                        row.prop( selected_item, "c_uv1RotScaleY_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uv1Translate_x")
-                        row.prop( selected_item, "c_uv1Translate_y") 
-                        row = box.row()   
+                        row.prop( selected_item, "c_uv1Translate_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uv2RotScaleX_x")
-                        row.prop( selected_item, "c_uv2RotScaleX_y") 
-                        row = box.row()   
+                        row.prop( selected_item, "c_uv2RotScaleX_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uv2RotScaleY_x")
-                        row.prop( selected_item, "c_uv2RotScaleY_y")  
-                        row = box.row()   
+                        row.prop( selected_item, "c_uv2RotScaleY_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uv2Translate_x")
-                        row.prop( selected_item, "c_uv2Translate_y") 
-                        row = box.row()   
+                        row.prop( selected_item, "c_uv2Translate_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uv3RotScaleX_x")
-                        row.prop( selected_item, "c_uv3RotScaleX_y")   
-                        row = box.row()   
+                        row.prop( selected_item, "c_uv3RotScaleX_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uv3RotScaleY_x")
-                        row.prop( selected_item, "c_uv3RotScaleY_y") 
-                        row = box.row()   
+                        row.prop( selected_item, "c_uv3RotScaleY_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uv3Translate_x")
-                        row.prop( selected_item, "c_uv3Translate_y") 
-                        row = box.row()   
+                        row.prop( selected_item, "c_uv3Translate_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uvDistortionIntensity_x")
-                        row.prop( selected_item, "c_uvDistortionIntensity_y") 
-                        row = box.row()   
+                        row.prop( selected_item, "c_uvDistortionIntensity_y")
+                        row = box.row()
                         row.prop( selected_item, "c_uvDistortion2Intensity_x")
                         row.prop( selected_item, "c_uvDistortion2Intensity_y")
-                        row = box.column()   
+                        row = box.column()
                         row.prop( selected_item, "c_fogColorFactor", text="c_fogColorFactor" )
                         row.prop( selected_item, "c_layerBlendRamp", text="c_layerBlendRamp" )
                         row.prop( selected_item, "c_opacity", text="c_opacity" )
@@ -397,7 +397,7 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                         row.prop( selected_item, "c_tsaaMotionAlphaRamp", text="c_tsaaMotionAlphaRamp" )
                         row.prop( selected_item, "c_dofOpacityLuminanceScale", text="c_dofOpacityLuminanceScale" )
                         row.prop( selected_item, "c_perfGloss", text="c_perfGloss" )
-                            
+
 
                 row = box.row()
                 row.prop( selected_item, "material_override_enabled", text="Override Material" )
@@ -423,7 +423,39 @@ class PerimeterMaterialManagementPanel( bpy.types.Panel ):
                     row.label( text="IMPORTANT enter the full material path.", icon="ERROR" )
 
         layout = self.layout
-        row = layout.row()
+        row = layout.column()
+        #row.label( text="  ")
+        #row.label( text="Bellow is the Single RPAK Packer" )
+        #row.label( text="this allows you to export selected materials into" )
+        #row.label( text="a single RPAK whereever you selected" )
+#
+        #row = layout.row()
+#
+        #rpak_compile_box = layout.row()
+        #row = rpak_compile_box.row()
+        #row.label( text="Select Materials to Pack", icon="LIGHTPROBE_CUBEMAP" )
+        #row.label( text="Single RPAK Packer", icon="RESTRICT_INSTANCED_OFF" )
+        #rpak_compile_box = layout.row()
+        #row = rpak_compile_box.column()
+#
+        #for material in bpy.context.scene.perimeter_material_main_collection:
+        #    newrow= row.box()
+        #    newrow = newrow.row()
+        #    newrow.prop( material, "rpak_export_in_single_rpak", text="" if material.rpak_export_in_single_rpak else "", icon="CHECKMARK" if material.rpak_export_in_single_rpak else "CANCEL")
+        #    newrow.label( text=f"{material.name}", icon="MATERIAL" )
+#
+        #row2 = rpak_compile_box.column()
+        #newrow= row2.box()
+        #newrow = newrow.column()
+#
+        #newrow.label( text=f"Select Export path", icon="MATERIAL" )
+#
+        #newrow.prop( context.scene, "perimeter_rpak_export_path", text="RPAK Export Path" )
+        #newrow2 = newrow.row()
+        #newrow2.scale_y = len(bpy.context.scene.perimeter_material_main_collection)
+        #newrow2.operator( "perimeter.material_management_panel_export_rpak", text="Export RPAK", icon="EXPORT" )
+
+
 
 
 
@@ -448,7 +480,7 @@ class PerimeterMaterialManagementImportPerimeterMaterial(bpy.types.Operator):
 
     def execute(self, context):
         selected_index = context.scene.perimeter_material_main_collection_index
-        material = context.scene.perimeter_material_main_collection[selected_index]   
+        material = context.scene.perimeter_material_main_collection[selected_index]
         # Combine the file path and the file name
         filepath = bpy.path.ensure_ext(self.filepath, ".pma")
         # Perform load
@@ -457,21 +489,21 @@ class PerimeterMaterialManagementImportPerimeterMaterial(bpy.types.Operator):
         loaded_pma.read_pema(loaded_pma, filepath)
 
 
-        material.rpak_unkFlags                = loaded_pma.rpak_unkFlags                          
-        material.rpak_depthStencilFlags       = loaded_pma.rpak_depthStencilFlags                 
-        material.rpak_rasterizerFlags         = loaded_pma.rpak_rasterizerFlags    
-              
-        material.rpak_manual_shaderset        = "0x" + hex(loaded_pma.rpak_manual_shaderset).upper()[2:]      
-        material.rpak_flag_1                  = hex(loaded_pma.rpak_flag_1)[2:].upper()          
-        material.rpak_flag_2                  = hex(loaded_pma.rpak_flag_2)[2:].upper()         
+        material.rpak_unkFlags                = loaded_pma.rpak_unkFlags
+        material.rpak_depthStencilFlags       = loaded_pma.rpak_depthStencilFlags
+        material.rpak_rasterizerFlags         = loaded_pma.rpak_rasterizerFlags
+
+        material.rpak_manual_shaderset        = "0x" + hex(loaded_pma.rpak_manual_shaderset).upper()[2:]
+        material.rpak_flag_1                  = hex(loaded_pma.rpak_flag_1)[2:].upper()
+        material.rpak_flag_2                  = hex(loaded_pma.rpak_flag_2)[2:].upper()
 
         material.rpak_blendState0             = str(loaded_pma.rpak_blendState0)
         material.rpak_blendState1             = str(loaded_pma.rpak_blendState1)
         material.rpak_blendState2             = str(loaded_pma.rpak_blendState2)
         material.rpak_blendState3             = str(loaded_pma.rpak_blendState3)
-        material.rpak_albedoTint[0]           = loaded_pma.rpak_albedoTint.x      
+        material.rpak_albedoTint[0]           = loaded_pma.rpak_albedoTint.x
         material.rpak_albedoTint[1]           = loaded_pma.rpak_albedoTint.y
-        material.rpak_albedoTint[2]           = loaded_pma.rpak_albedoTint.z  
+        material.rpak_albedoTint[2]           = loaded_pma.rpak_albedoTint.z
 
         material.rpak_selfillum[0]            = loaded_pma.rpak_selfillum.x
         material.rpak_selfillum[1]            = loaded_pma.rpak_selfillum.y
@@ -480,7 +512,7 @@ class PerimeterMaterialManagementImportPerimeterMaterial(bpy.types.Operator):
         material.c_perfSpecColor[0]           = loaded_pma.c_perfSpecColor.x
         material.c_perfSpecColor[1]           = loaded_pma.c_perfSpecColor.y
         material.c_perfSpecColor[2]           = loaded_pma.c_perfSpecColor.z
-                 
+
 
         material.c_uv1RotScaleX_x             = loaded_pma.c_uv1RotScaleX_x
         material.c_uv1RotScaleX_y             = loaded_pma.c_uv1RotScaleX_y
@@ -505,31 +537,31 @@ class PerimeterMaterialManagementImportPerimeterMaterial(bpy.types.Operator):
         material.c_uvDistortion2Intensity_x   = loaded_pma.c_uvDistortion2Intensity_x
         material.c_uvDistortion2Intensity_y   = loaded_pma.c_uvDistortion2Intensity_y
 
-        material.c_fogColorFactor             = loaded_pma.c_fogColorFactor                
-        material.c_layerBlendRamp             = loaded_pma.c_layerBlendRamp                
-        material.c_opacity                    = loaded_pma.c_opacity                   
-        material.c_useAlphaModulateSpecular   = loaded_pma.c_useAlphaModulateSpecular                          
-        material.c_alphaEdgeFadeExponent      = loaded_pma.c_alphaEdgeFadeExponent                         
-        material.c_alphaEdgeFadeOuter         = loaded_pma.c_alphaEdgeFadeOuter                        
-        material.c_alphaEdgeFadeInner         = loaded_pma.c_alphaEdgeFadeInner                        
-        material.c_useAlphaModulateEmissive   = loaded_pma.c_useAlphaModulateEmissive                          
-        material.c_emissiveEdgeFadeExponent   = loaded_pma.c_emissiveEdgeFadeExponent                          
-        material.c_emissiveEdgeFadeInner      = loaded_pma.c_emissiveEdgeFadeInner                         
-        material.c_emissiveEdgeFadeOuter      = loaded_pma.c_emissiveEdgeFadeOuter                         
-        material.c_alphaDistanceFadeScale     = loaded_pma.c_alphaDistanceFadeScale                        
-        material.c_alphaDistanceFadeBias      = loaded_pma.c_alphaDistanceFadeBias                         
-        material.c_alphaTestReference         = loaded_pma.c_alphaTestReference                        
-        material.c_aspectRatioMulV            = loaded_pma.c_aspectRatioMulV                       
-        material.c_shadowBias                 = loaded_pma.c_shadowBias                        
-        material.c_tsaaDepthAlphaThreshold    = loaded_pma.c_tsaaDepthAlphaThreshold                       
-        material.c_tsaaMotionAlphaThreshold   = loaded_pma.c_tsaaMotionAlphaThreshold                          
-        material.c_tsaaMotionAlphaRamp        = loaded_pma.c_tsaaMotionAlphaRamp                       
-        material.c_dofOpacityLuminanceScale   = loaded_pma.c_dofOpacityLuminanceScale                          
-        material.c_perfGloss                  = loaded_pma.c_perfGloss                 
+        material.c_fogColorFactor             = loaded_pma.c_fogColorFactor
+        material.c_layerBlendRamp             = loaded_pma.c_layerBlendRamp
+        material.c_opacity                    = loaded_pma.c_opacity
+        material.c_useAlphaModulateSpecular   = loaded_pma.c_useAlphaModulateSpecular
+        material.c_alphaEdgeFadeExponent      = loaded_pma.c_alphaEdgeFadeExponent
+        material.c_alphaEdgeFadeOuter         = loaded_pma.c_alphaEdgeFadeOuter
+        material.c_alphaEdgeFadeInner         = loaded_pma.c_alphaEdgeFadeInner
+        material.c_useAlphaModulateEmissive   = loaded_pma.c_useAlphaModulateEmissive
+        material.c_emissiveEdgeFadeExponent   = loaded_pma.c_emissiveEdgeFadeExponent
+        material.c_emissiveEdgeFadeInner      = loaded_pma.c_emissiveEdgeFadeInner
+        material.c_emissiveEdgeFadeOuter      = loaded_pma.c_emissiveEdgeFadeOuter
+        material.c_alphaDistanceFadeScale     = loaded_pma.c_alphaDistanceFadeScale
+        material.c_alphaDistanceFadeBias      = loaded_pma.c_alphaDistanceFadeBias
+        material.c_alphaTestReference         = loaded_pma.c_alphaTestReference
+        material.c_aspectRatioMulV            = loaded_pma.c_aspectRatioMulV
+        material.c_shadowBias                 = loaded_pma.c_shadowBias
+        material.c_tsaaDepthAlphaThreshold    = loaded_pma.c_tsaaDepthAlphaThreshold
+        material.c_tsaaMotionAlphaThreshold   = loaded_pma.c_tsaaMotionAlphaThreshold
+        material.c_tsaaMotionAlphaRamp        = loaded_pma.c_tsaaMotionAlphaRamp
+        material.c_dofOpacityLuminanceScale   = loaded_pma.c_dofOpacityLuminanceScale
+        material.c_perfGloss                  = loaded_pma.c_perfGloss
 
-        material.rpak_surfacetype             = loaded_pma.rpak_surfacetype        
-        material.rpak_type                    = loaded_pma.rpak_type 
-        material.rpak_subtype                 = loaded_pma.rpak_subtype 
+        material.rpak_surfacetype             = loaded_pma.rpak_surfacetype
+        material.rpak_type                    = loaded_pma.rpak_type
+        material.rpak_subtype                 = loaded_pma.rpak_subtype
 
 
 
@@ -565,7 +597,7 @@ class PerimeterMaterialManagementImportPerimeterMaterial(bpy.types.Operator):
 
     def check(self, context):
         return True
-    
+
 
 
 
@@ -579,7 +611,7 @@ class PerimeterMaterialManagementExportPerimeterMaterial(bpy.types.Operator):
 
     def execute(self, context):
         selected_index = context.scene.perimeter_material_main_collection_index
-        material = context.scene.perimeter_material_main_collection[selected_index]   
+        material = context.scene.perimeter_material_main_collection[selected_index]
         # Combine the file path and the file name
         filepath = bpy.path.ensure_ext(self.filepath, ".pma")
         # Perform save operation here
@@ -737,8 +769,8 @@ class PerimeterMaterialManagementPanelExportRPAK( Operator ):
 
         if selected_item.rpak_shader_is_set:
             if selected_item.export_rpak:
-                if addon_prefs.repak_path == "":
-                    self.report( {'ERROR'}, "RPAK Export Path not set, set in Preferences" )
+                if context.scene.perimeter_rpak_export_path == "":
+                    self.report( {'ERROR'}, "RPAK Export Path not set" )
                     return {'CANCELLED'}
                 else:
                     perimeter_make_refactor_rpak( context, "single_mat" )
@@ -781,7 +813,7 @@ def perimeter_make_refactor_rpak( context, mode="all_mats"): #refactor repak map
     ######################################
 
     addon_prefs = context.preferences.addons[__package__].preferences
-    # never change 
+    # never change
     repak_path = addon_prefs.repak_path
 
     rpak_export_path = context.scene.perimeter_rpak_export_path
@@ -790,7 +822,47 @@ def perimeter_make_refactor_rpak( context, mode="all_mats"): #refactor repak map
 
     if mode == "single_mat":
         selected_index = context.scene.perimeter_material_main_collection_index
-        material = context.scene.perimeter_material_main_collection[selected_index]        
+        material = context.scene.perimeter_material_main_collection[selected_index]
+
+        for material in bpy.context.scene.perimeter_material_main_collection:
+            if material.rpak_export_in_single_rpak:
+                materials_to_export.append(material)
+        if not len(materials_to_export) == 0:
+            map_returned= perimeter_make_refactor_map(materials_to_export)
+            map_path = map_returned[0]
+            source_png_list = map_returned[1]
+            destination_png_list = map_returned[2]
+            material_paths_list = map_returned[3]
+            cpu_file_queue = map_returned[4]
+
+            for mat_path in material_paths_list:
+                mat_path = mat_path.replace("\\", "/").replace("//", "/")
+                if not os.path.exists( mat_path ):
+                    os.makedirs( mat_path )
+
+            #make cpu files
+            for queued_cpu_file in cpu_file_queue:
+                make_cpu(queued_cpu_file[0], queued_cpu_file[1])
+
+            if len(source_png_list) == len(destination_png_list):
+                for i in range(len(source_png_list)):
+                    shutil.copy( source_png_list[i], destination_png_list[i] + ".png")
+                    time.sleep(0.1)
+
+            for material_path in material_paths_list:
+                convert_textures( addon_prefs.texconv_path, material_path)
+
+        cmd = f'"{repak_path}" "{map_path}"'
+
+        call( cmd, shell=True )
+
+        os.remove(map_path)
+
+        shutil.rmtree(os.path.dirname(repak_path) + "/perimeter_assets/")
+
+
+
+
 
     materials_to_export = []
     if mode == "all_mats":
@@ -819,15 +891,14 @@ def perimeter_make_refactor_rpak( context, mode="all_mats"): #refactor repak map
                     shutil.copy( source_png_list[i], destination_png_list[i] + ".png")
                     time.sleep(0.1)
 
-            for material_path in material_paths_list:
-                convert_textures( addon_prefs.texconv_path, material_path)
+            convert_textures_list(addon_prefs.texconv_path, destination_png_list)
 
         cmd = f'"{repak_path}" "{map_path}"'
-    
+
         call( cmd, shell=True )
-    
+
         os.remove(map_path)
-    
+
         shutil.rmtree(os.path.dirname(repak_path) + "/perimeter_assets/")
 
 

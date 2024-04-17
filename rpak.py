@@ -31,7 +31,32 @@ def convert_textures( texconv_path, asset_path ):
 
         subprocess.call( tex_conv_args_list , shell=True )
 
+bc4_list = ["_3"]
+bc5_list = ["_2", "_16"]  #slot ending strings
 
+def convert_textures_list( texconv_path, file_list ):
+     for filename in file_list:
+        is_bc4 = False
+        is_bc5 = False
+        print(filename)
+        print(os.path.basename(filename))
+
+        for ending in bc5_list:
+
+            if filename.lower().endswith(ending):
+                is_bc5 = True
+                tex_conv_args_list = [texconv_path, "-f", "BC5_UNORM", "-srgb", "-ft", "dds", filename + ".png" , "-o", os.path.dirname(filename)]
+
+        for ending in bc4_list:
+            
+            if filename.lower().endswith(ending):
+                is_bc4 = True
+                tex_conv_args_list = [texconv_path, "-f", "BC4_UNORM", "-srgbi", "-ft", "dds", filename + ".png", "-o", os.path.dirname(filename)]
+
+        if not is_bc4 and not is_bc5:
+            tex_conv_args_list = [texconv_path, "-f", "BC1_UNORM_SRGB", "-srgbi", "-ft", "dds", filename + ".png", "-o", os.path.dirname(filename)]
+
+        subprocess.call( tex_conv_args_list , shell=True )
 
 
 def perimeter_make_refactor_map(materials):

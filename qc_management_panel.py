@@ -143,8 +143,6 @@ class PerimeterQCBodygroupManager( bpy.types.Panel ):
                 removerow.enabled = False
             removerow.operator( "northstar.remove_bodygroup_item", text=f"Remove", icon="REMOVE")
 
-
-
    
             if not selected_item == None:
                 col2 = row.column()

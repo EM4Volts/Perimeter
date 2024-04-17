@@ -676,7 +676,7 @@ class NSAllInOneTestOperator( Operator ):
 
 
 
-
+ 
             mod_path = make_testmod( self, context )
 
             if not context.scene.northstar_rpak_materials_enabled:
@@ -921,11 +921,13 @@ class NSQCFilePanel( bpy.types.Panel ):
         #row.label( text="QC File Info", icon="FILE" )
         layout = self.layout
         row = layout.column()
+        row.label( text="PRE-Compilation steps", icon="PRESET" )
 
 
         row = layout.row()
         compile_box = layout.box()
         row = compile_box.row()
+
 
 
         row.operator( "perimeter.qc_parser", text="Select QC File", icon="FILE_FOLDER" )
@@ -968,10 +970,7 @@ class NSQCFilePanel( bpy.types.Panel ):
         version = str( bl_info["version"][0] ) + "." + str( bl_info["version"][1] )
         row.label( text="Perimeter v" + version, icon="INFO" )
 
-         # Increase button height
 
-        #add updateable lables for the qc file path and its informations
-        row = compile_box.row()
 
 
 class NSGameFolderOperator( Operator ):
@@ -1203,9 +1202,9 @@ classes = ( # classes for the register and unregister functions
     #NSManagerPanel, # Perimeter tab
     PerimeterMaterialManagementPanel, # Material Management tab
     NSMDLUtilsPanel, # MDLutils tab
-    NSQCFilePanel, # QC File tab
     PerimeterQCManagementPanel,
     PerimeterQCBodygroupManager,
+    NSQCFilePanel, # QC File tab
 
     NSGameFolderOperator,  # Game Folder Selector for Studiomdl
     NSLauncherOperator, # Launch button bl_idname: northstar.launcher
