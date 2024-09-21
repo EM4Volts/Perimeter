@@ -3,18 +3,7 @@
 
 
 
-#BLENDER 4.0 BROKE ALOT OF THE MATERIAL SETUP STUFF, STAY ON 3.6 TO USE PERIMETER
-
-DO NOT DOWNLOAD THE RELEASE ZIPS, DOWNLOAD THE SOURCE FROM ABOVE
-## Setup
-https://em4volts.github.io/perimeter-wiki/setup
-
-
-## Issues / Bugs
-
-Make an issue in the cool issues section up there, or if you fixed them make a PR and ill look at it in about 20 years.
-## License
-
-[GPL3](https://github.com/EM4Volts/Perimeter/blob/main/LICENSE)
+this repo is now archived. i achieved what i wanted with perimeter but due to stuff i wont make public updates anymore.
+for further help either message me on discord about it or cry in a corner idk
 
 
